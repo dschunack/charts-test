@@ -23,15 +23,15 @@ version: 0.6.2
 # It is recommended to use it with quotes.
 
 dependencies:
-- name: enerkube-karpenter-infrastructure
-  version: "0.1.4"
-  repository: "https://enercity-iac-enerkube-charts.pages.enercity.ghe.com/"
+# - name: enerkube-karpenter-infrastructure
+#   version: "0.1.4"
+#   repository: "https://enercity-iac-enerkube-charts.pages.enercity.ghe.com/"
 - name: karpenter-crd
   version: "1.4.0"
   repository: "oci://public.ecr.aws/karpenter"
 - name: karpenter
   version: "1.4.0"
   repository: "oci://public.ecr.aws/karpenter"
-- name: karpenter-nodepool
-  version: "1.4.2"
-  repository: "https://enercity-iac-enerkube-charts.pages.enercity.ghe.com/"
+# - name: karpenter-nodepool
+#   version: "1.4.2"
+#   repository: "https://enercity-iac-enerkube-charts.pages.enercity.ghe.com/"

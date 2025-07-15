@@ -26,6 +26,6 @@ dependencies:
 - name: kyverno-policies
   version: "3.4.1"
   repository: "https://kyverno.github.io/kyverno/"
-- name: kyverno-enerkube-policies
-  version: "0.13.18"
-  repository: "https://enercity-iac-enerkube-charts.pages.enercity.ghe.com/"
+# - name: kyverno-enerkube-policies
+#   version: "0.13.18"
+#   repository: "https://enercity-iac-enerkube-charts.pages.enercity.ghe.com/"

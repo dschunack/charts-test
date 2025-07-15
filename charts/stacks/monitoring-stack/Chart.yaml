@@ -23,9 +23,9 @@ version: 1.1.0
 # It is recommended to use it with quotes.
 
 dependencies:
-- name: monitoring-infrastructure
-  version: "1.0.1"
-  repository: "https://enercity.ghe.com/pages/enercity-iac/enerkube-charts/"
+# - name: monitoring-infrastructure
+#   version: "1.0.1"
+#   repository: "https://enercity.ghe.com/pages/enercity-iac/enerkube-charts/"
 - name: prometheus-operator-crds
   version: "13.0.2"
   repository: "https://prometheus-community.github.io/helm-charts/"

@@ -23,9 +23,9 @@ version: 1.0.2-rc1
 # It is recommended to use it with quotes.
 
 dependencies:
-- name: monitoring-exporter-infrastructure
-  version: "1.0.1"
-  repository: "https://enercity-iac-enerkube-charts.pages.enercity.ghe.com/"
+# - name: monitoring-exporter-infrastructure
+#   version: "1.0.1"
+#   repository: "https://enercity-iac-enerkube-charts.pages.enercity.ghe.com/"
 - name: helm-exporter
   version: "1.2.16"
   repository: "https://shanestarcher.com/helm-charts"
