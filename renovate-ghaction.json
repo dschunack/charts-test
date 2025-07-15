@@ -1,9 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "reviewers": ["team:cmo-internal"],
   "labels": ["renovate"],
     "repositories": [
-      "Cloud-Platform-Services/cmo-charts"
+      "enercity-iac/enerkube-charts"
   ],
   "packageRules": [
     {"matchUpdateTypes": ["major"], "addLabels": ["major"]},
@@ -20,10 +19,6 @@
     {
       "matchDatasources": ["git-tags"],
       "versioning": "semver"
-    },
-    {
-      "matchDatasources": ["docker"],
-      "registryUrls": ["common-docker-r.eu.artifactory.conti.de"]
     }
   ],
   "flux": {
