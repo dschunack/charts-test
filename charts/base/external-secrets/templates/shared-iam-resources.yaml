@@ -1,0 +1,63 @@
+{{- /* Shared IAM resources used by cluster-wide and namespaced ESO configurations */ -}}
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: "{{ .Values.clusterName }}-eso"
+  labels:
+    role: "{{ .Values.clusterName }}-eso"
+spec:
+  forProvider:
+    assumeRolePolicy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "arn:aws:iam::{{ .Values.accountId }}:oidc-provider/oidc.eks.{{ .Values.region }}.amazonaws.com/id/{{ .Values.oidcId }}"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "oidc.eks.{{ .Values.region }}.amazonaws.com/id/{{ .Values.oidcId }}:sub": "system:serviceaccount:{{ .Values.namespace }}:{{ .Values.serviceAccountController }}"
+              }
+            }
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Policy
+metadata:
+  name: eks-eso-{{ .Values.clusterName }}
+  labels:
+    policy: "eks-eso-{{ .Values.clusterName }}"
+spec:
+  forProvider:
+    policy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": "sts:assumeRole",
+            "Resource": "*"
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: "{{ .Values.clusterName }}-eso"
+spec:
+  forProvider:
+    roleSelector:
+      matchLabels:
+        role: "{{ .Values.clusterName }}-eso"
+    policyArnSelector:
+      matchLabels:
+        policy: "eks-eso-{{ .Values.clusterName }}"
+---

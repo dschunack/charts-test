@@ -1,0 +1,120 @@
+{{- $namespaceName := .Values.namespaceName | required ".Values.namespaceName is required." -}}
+
+{{- if .Values.createDefault }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: default-edit-role-binding
+  namespace: {{ $namespaceName }}
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+- kind: ServiceAccount
+  name: default-login-serviceaccount
+  namespace: {{ $namespaceName }}
+{{- end}}
+
+{{- if .Values.createReadOnly }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-only-role-binding
+  namespace: {{ $namespaceName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+subjects:
+- kind: ServiceAccount
+  name: read-only
+  namespace: {{ $namespaceName }}
+{{- end }}
+
+{{- if .Values.createPrivileged }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: privileged-edit-role-binding
+  namespace:  {{ $namespaceName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+- kind: ServiceAccount
+  name: privileged
+  namespace: {{ $namespaceName }}
+{{- end }}
+
+{{- if .Values.allowKubesystem }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pod-logs-kube-system-binding-{{ .Values.namespaceName }}
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: read-pod-logs-kube-system-{{ .Values.namespaceName }}
+subjects:
+- kind: ServiceAccount
+  name: default-login-serviceaccount
+  namespace: {{ .Values.namespaceName }}
+{{- end}}
+
+{{- if .Values.managementNamespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: create-enerkube-namespaces
+  namespace: {{ $namespaceName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: enerkube:composition-namespace:edit
+subjects:
+- kind: ServiceAccount
+  name: default-login-serviceaccount
+  namespace: {{ .Values.namespaceName }}
+{{- end}}
+
+{{- range .Values.permissions.view }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: view-role-binding-{{ .namespace }}-{{ .serviceAccount }}
+  namespace: {{ $namespaceName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+subjects:
+- kind: ServiceAccount
+  name: {{ .serviceAccount }}
+  namespace: {{ .namespace }}
+{{- end }}
+
+{{- range .Values.permissions.edit }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: edit-role-binding-{{ .namespace }}-{{ .serviceAccount }}
+  namespace: {{ $namespaceName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+- kind: ServiceAccount
+  name: {{ .serviceAccount }}
+  namespace: {{ .namespace }}
+{{- end }}

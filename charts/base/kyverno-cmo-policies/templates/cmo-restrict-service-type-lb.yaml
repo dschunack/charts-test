@@ -1,0 +1,35 @@
+{{- if .Values.policies.mutate.enerkubeRestrictServiceTypeLB -}}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutating-service-type-lb
+  annotations:
+    policies.kyverno.io/title: Restrict Service Type LoadBalancer
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/subject: Service
+    policies.kyverno.io/description: >-
+      Only allow usage of type LoadBalancer with proper annotations. 
+      This is to prevent the in-tree driver from setting up load balancers in public subnets in conti facing accounts
+spec:
+  rules:
+  - name: inject-lb-annotations
+    match:
+      resources:
+        kinds:
+        - /v1/Service
+    preconditions:
+      all:
+      - key: "{{`{{ request.object.spec.type }}`}}"
+        operator: Equals
+        value: "LoadBalancer"
+      - key: "{{`{{ request.operation }}`}}"
+        operator: Equals
+        value: CREATE
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            +(service.beta.kubernetes.io/aws-load-balancer-nlb-target-type): "ip"
+            +(service.beta.kubernetes.io/aws-load-balancer-scheme): "internal"
+            +(service.beta.kubernetes.io/aws-load-balancer-type): "external"
+{{- end -}}

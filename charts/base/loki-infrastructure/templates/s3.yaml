@@ -1,0 +1,115 @@
+apiVersion: s3.aws.upbound.io/v1beta2
+kind: Bucket
+metadata:
+  labels:
+    loki-bucket-name: {{ include "bucket.name" . }}
+  name: {{ include "bucket.name" . }}
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    region: {{ .Values.region }}
+  initProvider: {}
+  managementPolicies:
+  - '*'
+  providerConfigRef:
+    name: default
+---
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: BucketPublicAccessBlock
+metadata:
+  name: {{ include "bucket.name" . }}
+spec:
+  forProvider:
+    blockPublicAcls: true
+    blockPublicPolicy: true
+    ignorePublicAcls: true
+    restrictPublicBuckets: true
+    bucketSelector:
+      matchLabels:
+        loki-bucket-name: {{ include "bucket.name" . }}
+    region: {{ .Values.region }}
+---
+apiVersion: s3.aws.upbound.io/v1beta2
+kind: BucketLifecycleConfiguration
+metadata:
+  labels:
+    loki-bucket-name: {{ include "bucket.name" . }}
+  name: {{ include "bucket.name" . }}-fake
+spec:
+  forProvider:
+    bucketSelector:
+      matchLabels:
+        loki-bucket-name: {{ include "bucket.name" . }}
+    region: {{ .Values.region }}
+    rule:
+      - expiration:
+          days: {{ .Values.retentionDaysS3 }}
+        filter:
+          prefix: fake/
+        id: "cleanup_fake"
+        status: Enabled
+---
+apiVersion: s3.aws.upbound.io/v1beta2
+kind: BucketLifecycleConfiguration
+metadata:
+  labels:
+    loki-bucket-name: {{ include "bucket.name" . }}
+  name: {{ include "bucket.name" . }}-index
+spec:
+  forProvider:
+    bucketSelector:
+      matchLabels:
+        loki-bucket-name: {{ include "bucket.name" . }}
+    region: {{ .Values.region }}
+    rule:
+      - expiration:
+          days: {{ .Values.retentionDaysS3 }}
+        filter:
+          prefix: index/
+        id: "cleanup_index"
+        status: Enabled
+---
+apiVersion: s3.aws.upbound.io/v1beta2
+kind: BucketServerSideEncryptionConfiguration
+metadata:
+  labels:
+    loki-bucket-name: {{ include "bucket.name" . }}
+  name: {{ include "bucket.name" . }}
+spec:
+  forProvider:
+    bucketSelector:
+      matchLabels:
+        loki-bucket-name: {{ include "bucket.name" . }}
+    region: {{ .Values.region }}
+    rule:
+      - applyServerSideEncryptionByDefault:
+          sseAlgorithm: AES256
+---
+apiVersion: s3.aws.upbound.io/v1beta2
+kind: BucketACL
+metadata:
+  labels:
+    loki-bucket-name: {{ include "bucket.name" . }}
+  name: {{ include "bucket.name" . }}
+spec:
+  forProvider:
+    acl: private
+    bucketSelector:
+      matchLabels:
+        loki-bucket-name: {{ include "bucket.name" . }}
+    region: {{ .Values.region }}
+---
+apiVersion: s3.aws.upbound.io/v1beta2
+kind: BucketOwnershipControls
+metadata:
+  labels:
+    loki-bucket-name: {{ include "bucket.name" . }}
+  name: {{ include "bucket.name" . }}
+spec:
+  forProvider:
+    bucketSelector:
+      matchLabels:
+        loki-bucket-name: {{ include "bucket.name" . }}
+    region: {{ .Values.region }}
+    rule:
+      objectOwnership: ObjectWriter

@@ -1,0 +1,137 @@
+# CMO Chart specificc Values
+logging-operator:
+  createCustomResource: false
+  extraArgs:
+  - -enable-leader-election=true
+  http:
+    port: 8080
+    service:
+      annotations: {}
+      clusterIP: None
+      labels: {}
+      type: ClusterIP
+  image:
+    pullPolicy: IfNotPresent
+    repository: ghcr.io/kube-logging/logging-operator
+    tag: ""
+  monitoring:
+    serviceMonitor:
+      enabled: true
+  nodeSelector:
+    kubernetes.io/os: linux
+  rbac:
+    enabled: true
+    psp:
+      enabled: false
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: "1"
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  watchNamespace: ""
+logging-operator-logging:
+  allowClusterResourcesFromAllNamespaces: false
+  clusterDomain: cluster.local
+  clusterFlows:
+  - name: loki-flow
+    spec:
+      globalOutputRefs:
+      - loki-output
+      match:
+      - select: {}
+  clusterOutputs:
+  - name: loki-output
+    spec:
+      loki:
+        buffer:
+          chunk_full_threshold: "0.95"
+          chunk_limit_size: 64MB
+          flush_at_shutdown: false
+          flush_interval: 30s
+          flush_mode: interval
+          flush_thread_count: 64
+          overflow_action: drop_oldest_chunk
+          retry_forever: false
+          retry_randomize: true
+          retry_type: periodic
+          retry_wait: 30s
+          timekey: 1m
+          timekey_use_utc: true
+          timekey_wait: 30s
+          total_limit_size: 19Gi
+          type: file
+        configure_kubernetes_labels: true
+        slow_flush_log_threshold: 25s
+        url: http://loki-stack.cmo-observability.svc.cluster.local:3100
+  controlNamespace: ""
+  defaultFlow: {}
+  enableRecreateWorkloadOnImmutableFieldChange: false
+  errorOutputRef: ""
+  eventTailer: {}
+  flowConfigCheckDisabled: false
+  flowConfigOverride: ""
+  fluentbit:
+    metrics:
+      prometheusRules: true
+      serviceMonitor: true
+    nodeSelector:
+      kubernetes.io/os: linux
+    podPriorityClassName: system-node-critical
+    tolerations:
+    - operator: Exists
+  fluentbitDisabled: false
+  fluentd:
+    bufferStorageVolume:
+      pvc:
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+    bufferVolumeMetrics:
+      prometheusRules: true
+      serviceMonitor: true
+    bufferVolumeResources:
+      limits:
+        cpu: 1600m
+        memory: 500Mi
+      requests:
+        cpu: 200m
+        memory: 50Mi
+    metrics:
+      prometheusRules: false
+      serviceMonitor: true
+    resources:
+      limits:
+        cpu: "1"
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+    scaling:
+      replicas: 2
+    topologySpreadConstraints:
+    - labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: logging-operator
+      maxSkew: 1
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: DoNotSchedule
+  fluentdDisabled: false
+  fullnameOverride: ""
+  globalFilters: []
+  hostTailer: {}
+  loggingRef: ""
+  nameOverride: ""
+  nodeAgents: {}
+  scc:
+    enabled: false
+  skipInvalidResources: false
+  syslogNG: {}
+  tls:
+    enabled: false
+  watchNamespaces: []

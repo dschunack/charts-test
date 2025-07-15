@@ -1,0 +1,17 @@
+apiVersion: aws.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+  credentials:
+    source: IRSA
+{{- if .Values.providerconfigs.kubernetes }}
+---
+apiVersion: kubernetes.crossplane.io/v1alpha1
+kind: ProviderConfig
+metadata:
+  name: provider-kubernetes
+spec:
+  credentials:
+    source: InjectedIdentity
+{{- end }}

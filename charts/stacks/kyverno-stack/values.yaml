@@ -1,0 +1,260 @@
+# Subchart Values
+kyverno:
+
+  features:
+    policyExceptions:
+      enabled: true
+      namespace: '*'
+
+  metricsConfig:
+    metricsRefreshInterval: 24h
+
+  # Somehow this doesn't work, it seems like there is a bug in the helm chart.
+  global:
+    nodeSelector:
+      kubernetes.io/os: linux
+
+  webhooksCleanup:
+    nodeSelector:
+      kubernetes.io/os: linux
+    securityContext:
+      seccompProfile: null
+
+  cleanupJobs:
+    admissionReports:
+      nodeSelector:
+        kubernetes.io/os: linux
+      securityContext:
+        seccompProfile: null
+    clusterAdmissionReports:
+      nodeSelector:
+        kubernetes.io/os: linux
+      securityContext:
+        seccompProfile: null
+    updateRequests:
+      nodeSelector:
+        kubernetes.io/os: linux
+      securityContext:
+        seccompProfile: null
+    ephemeralReports:
+      nodeSelector:
+        kubernetes.io/os: linux
+      securityContext:
+        seccompProfile: null
+    clusterEphemeralReports:
+      nodeSelector:
+        kubernetes.io/os: linux
+      securityContext:
+        seccompProfile: null
+
+  backgroundController:
+    nodeSelector:
+      kubernetes.io/os: linux
+    securityContext:
+      seccompProfile: null
+
+  policyReportsCleanup:
+    nodeSelector:
+      kubernetes.io/os: linux
+    securityContext:
+      seccompProfile: null
+
+  crds:
+    migration:
+      nodeSelector:
+        kubernetes.io/os: linux
+      securityContext:
+        seccompProfile: null
+
+  test:
+    securityContext:
+      seccompProfile: null
+
+  admissionController:
+    replicas: "3"
+    priorityClassName: system-cluster-critical
+    nodeSelector:
+      kubernetes.io/os: linux
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/component: admission-controller
+        matchLabelKeys:
+          - pod-template-hash
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: kube-prometheus-stack
+      interval: 30s
+      scrapeTimeout: 25s
+    initResources:
+      limits:
+        cpu: null
+        memory: null
+      requests:
+        cpu: 10m
+        memory: 64Mi
+    container:
+      securityContext:
+        seccompProfile: null
+      extraArgs:
+        maxQueuedEvents: 100
+      resources:
+        limits:
+          memory: null
+        requests:
+          cpu: 100m
+          memory: 256Mi
+    metricsService:
+      create: true
+      port: 8000
+      type: ClusterIP
+      annotations: {}
+
+    podDisruptionBudget:
+      # -- Enable PodDisruptionBudget.
+      # Will always be enabled if replicas > 1. This non-declarative behavior should ideally be avoided, but changing it now would be breaking.
+      enabled: true
+      # -- Configures the minimum available pods for disruptions.
+      # Cannot be used if `maxUnavailable` is set.
+      minAvailable:
+      # -- Configures the maximum unavailable pods for disruptions.
+      # Cannot be used if `minAvailable` is set.
+      maxUnavailable: 1
+
+    initContainer:
+      securityContext:
+        seccompProfile: null
+
+  CleanupController:
+    nodeSelector:
+      kubernetes.io/os: linux
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      seccompProfile: null
+
+  reportsController:
+    nodeSelector:
+      kubernetes.io/os: linux
+    resources:
+      # -- Pod resource limits
+      limits:
+        memory: null
+    securityContext:
+      seccompProfile: null
+
+policy-reporter:
+  global:
+    # # available plugins
+    # plugins:
+    #   # enable kyverno for Policy Reporter UI and monitoring
+    #   kyverno: true
+    # # The name of service policy-report. Defaults to ReleaseName.
+    # backend: ""
+    # # overwrite the fullname of all resources including subcharts
+    # fullnameOverride: ""
+    # # additional labels added on each resource
+    labels: {}
+  # securityContext:
+  #   seccompProfile: null
+
+  profiling:
+    # -- Enable profiling with pprof
+    enabled: false
+
+  serviceAccount:
+    name: "kyverno-policy-reporter"
+
+  nodeSelector:
+    kubernetes.io/os: linux
+
+  metrics:
+    enabled: true
+    mode: detailed               # available modes are detailed, simple and custom
+
+  rest:
+    enabled: false
+
+  # SubCharts of policy reporter
+  plugin:
+    kyverno:
+      enabled: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      blockReports:
+        enabled: true
+        eventNamespace: default
+        results:
+          maxPerReport: 200
+          keepOnlyLatest: false
+
+  ui:
+    enabled: true
+    nodeSelector:
+      kubernetes.io/os: linux
+    displayMode: dark
+    # logSize: 200
+    # views:
+    #   dashboard:
+    #     policyReports: true
+    #     clusterPolicyReports: true
+    #   logs: true                     # also remove the UI as target of policy reporter
+    #   policyReports: true
+    #   clusterPolicyReports: true
+    #   kyvernoPolicies: true
+    #   kyvernoVerifyImages: true
+    serviceAccount:
+      create: true
+      name: "kyverno-policy-reporter-ui"
+
+  monitoring:
+    enabled: true
+    serviceMonitor:
+      labels:
+        release: prometheus-operator
+    grafana:
+      # -- Naamespace for configMap of grafana dashboards
+      namespace:
+      dashboards:
+        # -- Enable the deployment of grafana dashboards
+        enabled: true
+        # -- Label to find dashboards using the k8s sidecar
+        label: grafana_dashboard
+        # -- Label value to find dashboards using the k8s sidecar
+        value: "1"
+        # -- List of custom label filter
+        # Used to add filter for report label based metric labels defined in custom mode
+        labelFilter: []
+        multicluster:
+          # -- Enable cluster filter in all dashboards
+          enabled: false
+          # -- Metric Label which is used to filter clusters
+          label: cluster
+        enable:
+          # -- Enable the Overview Dashboard
+          overview: true
+          # -- Enable the PolicyReport Dashboard
+          policyReportDetails: true
+          # -- Enable the ClusterPolicyReport Dashboard
+          clusterPolicyReportDetails: true
+      folder:
+        # -- Annotation to enable folder storage using the k8s sidecar
+        annotation: grafana_folder
+        # -- Grafana folder in which to store the dashboards
+        name: Policy Reporter
+      datasource:
+        # -- Grafana Datasource Label
+        label: Prometheus
+        # -- Grafana Datasource PluginId
+        pluginId: prometheus
+        # -- Grafana Datasource PluginName
+        pluginName: Prometheus

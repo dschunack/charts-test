@@ -1,0 +1,21 @@
+{{- range $runtimeclass := .Values.NodeClasses.Windows }}
+---
+apiVersion: node.k8s.io/v1
+handler: runhcs-wcow-process
+kind: RuntimeClass
+metadata:
+  name: {{ .runtimeClassName }}
+  annotations:
+    kubernetes.io/description: "runtimeclass for {{ .runtimeClassName }}"
+  labels:
+    {{- include "karpenter-nodepool.labels" $ | nindent 4 }}
+scheduling:
+  nodeSelector:
+    kubernetes.io/os: windows
+    node.kubernetes.io/windows-build: {{ .windowsBuild }}
+  tolerations:
+  - effect: NoSchedule
+    key: kubernetes.io/os
+    operator: Equal
+    value: windows
+{{ end }}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "reviewers": ["team:cmo-internal"],
+  "labels": ["renovate"],
+    "repositories": [
+      "Cloud-Platform-Services/cmo-charts"
+  ],
+  "packageRules": [
+    {"matchUpdateTypes": ["major"], "addLabels": ["major"]},
+    {"matchUpdateTypes": ["minor"], "addLabels": ["minor"]},
+    {"matchUpdateTypes": ["patch"], "addLabels": ["patch"]},
+    {
+      "automergeType": "branch",
+      "matchUpdateTypes": ["patch", "digest", "pin"],
+      "matchPackageNames": ["*"],
+      "automerge": true,
+      "ignoreReviewers": true,
+      "ignoreTests": true
+    },
+    {
+      "matchDatasources": ["git-tags"],
+      "versioning": "semver"
+    },
+    {
+      "matchDatasources": ["docker"],
+      "registryUrls": ["common-docker-r.eu.artifactory.conti.de"]
+    }
+  ],
+  "flux": {
+    "fileMatch": ["(^|/).*.yaml$"]
+  },
+  "platformAutomerge": true,
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0
+}

@@ -1,0 +1,199 @@
+# Subchart Values
+
+kyverno-policies:
+  podSecurityStandard: "baseline"
+  podSecuritySeverity: "medium"
+  validationFailureAction: "Enforce"
+
+  failurePolicy: Fail
+
+  # PR needed to include this fuction #4416
+  autogenControllers: "none"
+
+  # PR needed to include this fuction #4416
+  includeRestrictedPolicies:
+  - require-run-as-non-root-user
+
+  # Waiting on PR to include this fuction #4400
+  #
+  # validationFailureActionByPolicy:
+  #  disallow-host-namespaces: Enforce
+  #  disallow-host-process: Enforce
+  #  disallow-host-path: Enforce
+  #  disallow-host-ports: Enforce
+
+  policyExclude:
+    disallow-capabilities:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-managed
+              operator: NotIn
+              values:
+              - "true"
+    disallow-host-namespaces:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-managed
+              operator: NotIn
+              values:
+              - "true"
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-kyverno-host-namespaces
+              operator: In
+              values:
+              - "true"
+    disallow-host-path:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-managed
+              operator: NotIn
+              values:
+              - "true"
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-kyverno-host-path
+              operator: In
+              values:
+              - "true"
+    disallow-host-ports:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-managed
+              operator: NotIn
+              values:
+              - "true"
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-kyverno-host-ports
+              operator: In
+              values:
+              - "true"
+    disallow-host-process:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-managed
+              operator: NotIn
+              values:
+              - "true"
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-kyverno-host-process
+              operator: In
+              values:
+              - "true"
+    disallow-privileged-containers:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-managed
+              operator: NotIn
+              values:
+              - "true"
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-kyverno-privileged
+              operator: In
+              values:
+              - "true"
+    require-run-as-non-root-user:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-managed
+              operator: NotIn
+              values:
+              - "true"
+      - resources:
+          kinds:
+          - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: cmo-kyverno-runasroot
+              operator: In
+              values:
+              - "true"
+
+kyverno-cmo-policies:
+  policies:
+    enable:
+      RestrictSecretStore: false
+    validate:
+      CheckKernelForCVE: Enforce
+      CheckSupplementalGroups: Enforce
+      CMODisallowLatestTag: Enforce
+      CMOCheckCRDAccess: Enforce
+      CMOCheckDeprecatedApis: Audit
+      PreventCr8escape: Enforce
+      RequireDropAll: Enforce
+      RestrictEscalationVerbsRoles: Enforce
+      RestrictResourcesBlacklist: Enforce
+      RestrictWildcardResources: Enforce
+      RestrictApiBlacklist: Enforce
+      RestrictWildcardVerbs: Enforce
+      RestrictBindingClusteradmin: Enforce
+      RestrictPriorityClasses: Audit
+      RequireRunAsNonroot: Enforce
+      CMORestrictBindingDefaultSA: Enforce
+      CMODisallowEfsProvisioner: Enforce
+      RequireRunAsNonRootGroups: Enforce
+    mutate:
+      CMOAddDefaultCapabilities: false
+      CMOAddDefaultNamespaceLabels: false
+      CMOAddDefaultNodeSelector: true
+      CMORestrictServiceTypeLB: true
+      CMORestrictLBcidrRanges: true
+      CMOAddDefaultRunAsNonRoot: false
+      CMOAddDefaultCapabilitiesToNamespaces: []
+      # - gha-cmo-runners
+      # - test
+      CMORunAsUid: []
+      # - namespace: "test"
+      #   containername: "jnlp"
+      #   uid: "1000"
+      CMORunAsGid: []
+      # - namespace: "test"
+      #   containername: "jnlp"
+      #   gid: "1000"
+

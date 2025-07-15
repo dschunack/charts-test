@@ -1,0 +1,37 @@
+{{- if .Values.policies.mutate.enerkubeRestrictLBcidrRanges -}}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutating-service-lb-cidr
+  annotations:
+    policies.kyverno.io/title: Restrict Service Type LoadBalancer
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/subject: Service
+    policies.kyverno.io/description: >-
+      Only allow usage of type LoadBalancer with proper annotations.
+      This is to set load-balancer-source-ranges to conti-internal cidr ranges
+spec:
+  background: false
+  rules:
+  - name: inject-lb-source-cidr
+    match:
+      resources:
+        kinds:
+        - /v1/Service
+    preconditions:
+      all:
+      - key: "{{`{{ request.object.spec.type }}`}}"
+        operator: Equals
+        value: "LoadBalancer"
+      - key: "{{`{{ request.operation }}`}}"
+        operator: Equals
+        value: CREATE
+    mutate:
+      patchStrategicMerge:
+        spec:
+          loadBalancerSourceRanges:
+          - 10.0.0.0/8
+          - 172.16.0.0/12
+          - 192.168.0.0/16
+          - 100.64.0.0/10
+{{- end -}}

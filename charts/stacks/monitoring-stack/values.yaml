@@ -1,0 +1,441 @@
+# Subchart Values
+monitoring-infrastructure:
+  region: ""
+  namespaceName: "cmo-observability"
+  clusterName: ""
+  accountId: ""
+  oidcId: ""
+  grafana:
+    serviceAccountName: "kube-prometheus-stack-grafana"
+  cloudExporter:
+    serviceAccountName: "cloudexporter-sa"
+
+kube-prometheus-stack:
+  global:
+    rbac:
+      createAggregateClusterRoles: true
+      pspEnabled: false
+      pspAnnotations:
+        seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+  # Disable EKS core components
+  kubeProxy:
+    enabled: false
+  kubeEtcd:
+    enabled: false
+  kubeControllerManager:
+    enabled: false
+  kubeScheduler:
+    enabled: false
+  prometheusOperator:
+    nodeSelector:
+      kubernetes.io/os: "linux"
+    admissionWebhooks:
+      patch:
+        nodeSelector:
+          kubernetes.io/os: "linux"
+  prometheus-node-exporter:
+    rbac:  
+      pspEnabled: false
+    podSecurityPolicy: 
+      enabled: false
+    nodeSelector:
+      kubernetes.io/os: "linux"
+    priorityClassName: "system-node-critical"
+
+  # Disable default rules we add on our own
+  defaultRules:
+    rules:
+      kubernetesResources: false # CPU/Memory Quota and Overcommit
+
+  additionalPrometheusRulesMap:
+    cmo-rules:
+      groups:
+      - name: Resources
+        rules:
+        - alert: CPUUsageExceedsConfiguredRequests
+          annotations:
+            description: |-
+              Container "{{ $labels.container }}" in pod "{{ $labels.pod }}" is permanently using more CPU than requested! Current consumption is {{ printf "%0.0f" $value }}% based on defined Requests! Please adjust and check out the runbook_url for more information!
+                Limit = 150
+                Count = {{ $value }}
+            summary: CPU consumption higher than requested
+            runbook_url: https://docs.cmo.conti.de/devguide/Prometheus_runbooks/#resource-consumption
+          expr: sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace!~"(kube.*|monitoring|trivy-system|kyverno|castai-agent|flux-system|keda|kube-logging|opencost|cmo.*)",pod!~"(.*jenkins.*|gha-.*)",container!~"jnlp"}) by (container,pod,namespace) / sum(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{namespace!~"(kube.*|monitoring|trivy-system|kyverno|castai-agent|flux-system|keda|kube-logging|opencost|cmo.*)",pod!~"(.*jenkins.*|gha-.*)",container!~"jnlp"}) by (container,pod,namespace) * 100 > 150
+          for: 30m
+          labels:
+            severity: warning
+        - alert: MemoryUsageExceedsConfiguredRequests
+          annotations:
+            description: |-
+              Container "{{ $labels.container }}" in pod "{{ $labels.pod }}" is permanently using more Memory than requested! Current consumption is {{ printf "%0.0f" $value }}% based on defined Requests! Please adjust and check out the runbook_url for more information!
+                Limit = 120
+                Count = {{ $value }}
+            runbook_url: https://docs.cmo.conti.de/devguide/Prometheus_runbooks/#resource-consumption
+            summary: Memory Consumption higher than requested
+          expr: sum(container_memory_working_set_bytes{job="kubelet", namespace!~"(kube.*|monitoring|trivy-system|kyverno|castai-agent|flux-system|keda|kube-logging|opencost|cmo.*)",pod!~"(.*jenkins.*|gha-.*)",container!~"jnlp"}) by (container,pod,namespace) / sum(cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{namespace!~"(kube.*|monitoring|trivy-system|kyverno|castai-agent|flux-system|keda|kube-logging|opencost|cmo.*)",pod!~"(.*jenkins.*|gha-.*)",container!~"jnlp"}) by (container,pod,namespace) * 100 > 120
+          for: 30m
+          labels:
+            severity: warning
+      - name: Security
+        rules:
+        - alert: AdmissionReportSignificantIncrease
+          annotations:
+            description: |-
+              It seems that too many Kyverno AdmissionReports are beeing created. Current number of new reports is {{ printf "%0.0f" $value }}%! Please adjust and check out the runbook_url for more information!
+                Limit = 10000
+                Count = {{ $value }}
+            summary: Too many Kyverno AdmissionReports are beeing created
+            runbook_url: https://docs.de/devguide/Kyverno/
+          expr: sum by (resource_kind) (increase(kyverno_client_queries_total{resource_kind="AdmissionReport"}[15m])) > 10000
+          for: 30m
+          labels:
+            severity: warning
+        - alert: KyvernoEventsSignificantIncrease
+          annotations:
+            description: |-
+              It seems that too many Kyverno Events are beeing created. Current number of new events is {{ printf "%0.0f" $value }}%! Please adjust and check out the runbook_url for more information!
+                Limit = 50000
+                Count = {{ $value }}
+            summary: Too many Kyverno AdmissionReports are beeing created
+            runbook_url: https://docs.enercity.de/devguide/Kyverno/
+          expr: sum by (resource_kind) (increase(kyverno_client_queries_total{resource_kind="Event"}[15m])) > 50000
+          for: 30m
+          labels:
+            severity: warning
+      - name: ETCD
+        rules:
+        - alert: ETCDSizeIsTooLarge
+          annotations:
+            description: |-
+              The ETCD DB is too large. Please, check the object counts in the ETCD.
+                Limit = 6
+                Count = {{ $value }}
+            summary: ETCD DB is too large
+          expr: (etcd_db_total_size_in_bytes/1024/1024/1024) > 6
+          for: 10m
+          labels:
+            severity: critical
+        - alert: TooManyObjectsInETCD
+          annotations:
+            description: |-
+              We have too many Objects in the ETCD and this will cause problems.
+                Limit = 100000
+                Count = {{ $value }}
+            summary: Too many Objects
+          expr: etcd_object_counts > 100000
+          for: 10m
+          labels:
+            severity: critical
+
+  kube-state-metrics:
+    podSecurityPolicy: 
+      enabled: false
+      annotations:
+        seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+    nodeSelector:
+      kubernetes.io/os: "linux"
+      
+  nodeExporter:
+    enabled: true
+    serviceMonitor:
+      ## Scrape interval. If not set, the Prometheus default scrape interval is used.
+      ##
+      interval: "30s"
+
+  alertmanager:
+    alertmanagerSpec:
+      nodeSelector:
+        kubernetes.io/os: "linux"
+      replicas: 1
+      storage:
+        volumeClaimTemplate:
+          spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+              requests:
+                storage: 2Gi
+    ingress:
+      enabled: true
+      annotations:
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/auth-snippet: |
+          proxy_set_header Ldap-Required-Groups "au00_service_cmo_admin,au00_service_cmo_external";
+        nginx.ingress.kubernetes.io/auth-url: "http://ldap-auth.cmo-system.svc.cluster.local"
+        nginx.ingress.kubernetes.io/auth-realm: 'Alertmanager login'
+        kubernetes.io/ingress.class: "nginx"            
+      hosts: []
+
+  grafana:
+    initChownData:
+      enabled: false
+    deploymentStrategy:
+      type: Recreate
+    enabled: true
+    nodeSelector:
+      kubernetes.io/os: "linux"
+    rbac:
+      pspEnabled: false
+      pspUseAppArmor: false
+    annotations:
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    persistence:
+      enabled: true
+      type: pvc
+      size: 30Gi
+      accessModes: 
+      - ReadWriteOnce
+    sidecar:
+      dashboards:
+        enabled: true
+        label: "grafana_dashboard"
+        searchNamespace: ALL
+      datasources:
+        enabled: true
+        label: "grafana_datasource"
+        searchNamespace: ALL
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources: []
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+        - name: 'grafana-com'
+          orgId: 1
+          folder: 'grafana-com'
+          type: file
+          disableDeletion: false
+          editable: false
+          options:
+            path: "/var/lib/grafana/dashboards/grafana-com"
+    dashboards:
+      "grafana-com":
+        CoreDNS:
+          gnetId: 11759
+          datasource: Prometheus
+        KubernetesCluster:
+          gnetId: 10670
+          datasource: Prometheus
+        NodeExporterFull:
+          gnetId: 1860
+          datasource: Prometheus
+        KubernetesIngressNginx:
+          gnetId: 11875
+          datasource: Prometheus
+        NGINX:
+          gnetId: 6927
+          datasource: Prometheus
+        KubernetesAPI:
+          gnetId: 12006
+          datasource: Prometheus
+        NGINXIngressController:
+          gnetId: 9614
+          datasource: Prometheus
+        LokiDashboard:
+          gnetId: 17781
+          datasource: Prometheus
+        LokiLogs:
+          gnetId: 13186
+          datasource: Prometheus
+        NvidiaDCGMExporter:
+          gnetId: 12239
+          datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+        WindowsResourcePod:
+          gnetId: 21696
+          datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+        WindowsStatus:
+          gnetId: 16523
+          datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+        WindowsExporterDashboard:
+          gnetId: 21697
+          datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+        Karpenter:
+          gnetId: 21699
+          datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+        LoggingOperator:
+          gnetId: 7752
+          revision: 6
+          datasource: Prometheus 
+        AmazonCloudWatchLogs:
+          gnetId: 11266
+          datasource: CloudWatch
+        AmazonEC2:
+          gnetId: 11265
+          datasource: CloudWatch
+        AmazonRDS:
+          gnetId: 11264
+          datasource: CloudWatch
+        AWSApiGateway:
+          gnetId: 1516
+          datasource: CloudWatch
+        AWSAutoscaling:
+          gnetId: 677
+          datasource: CloudWatch
+        AWSBilling:
+          gnetId: 139
+          datasource: CloudWatch
+        AWSCloudWatchBrowser:
+          gnetId: 590
+          datasource: CloudWatch
+        AWSEBS:
+          gnetId: 623
+          datasource: CloudWatch
+        AWSEFS:
+          gnetId: 653
+          datasource: CloudWatch
+        AWSELBALB:
+          gnetId: 650
+          datasource: CloudWatch
+        AWSELSClassic:
+          gnetId: 644
+          datasource: CloudWatch
+        AWSEMRHadoop2:
+          gnetId: 607
+          datasource: CloudWatch
+        AWSLambda:
+          gnetId: 593
+          datasource: CloudWatch
+        AWSS3:
+          gnetId: 575
+          datasource: CloudWatch
+        AWSSES:
+          gnetId: 1519
+          datasource: CloudWatch
+        AWSSQS:
+          gnetId: 584
+          datasource: CloudWatch
+        AWSSNS:
+          gnetId: 581
+          datasource: CloudWatch
+    extraSecretMounts:
+      - name: enercity-ca-crt
+        secretName: enercity-ca-crt
+        mountPath: /etc/grafana/enercity-ca-crt
+        readOnly: true
+    ingress:
+      enabled: true
+      annotations:
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        kubernetes.io/ingress.class: nginx
+      hosts: []
+    serviceAccount:
+      name: "kube-prometheus-stack-grafana"
+      annotations: {}
+      create: true
+    grafana.ini:
+      security:
+        angular_support_enabled: true #this is deprecated
+      dashboards:
+        default_home_dashboard_path: /tmp/dashboards/monitoring_k8s-overview.json
+      dataproxy:
+        timeout: 300
+      server:
+        root_url: []
+      auth.ldap:
+        allow_sign_up: true
+        config_file: /etc/grafana/ldap.toml
+        enabled: true
+  prometheus:
+    enabled: true
+    ingress:
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        nginx.ingress.kubernetes.io/auth-realm: Prometheus login
+        nginx.ingress.kubernetes.io/auth-url: http://ldap-auth.cmo-system.svc.cluster.local
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      enabled: true
+      hosts: []
+    additionalPodMonitors:
+    - additionalLabels:
+        k8s-app: aws-node
+      name: aws-node-metrics-podmonitor
+      namespaceSelector:
+        matchNames:
+        - cmo-system
+      podMetricsEndpoints:
+      - port: metrics
+      selector:
+        matchLabels:
+          k8s-app: aws-node
+    prometheusSpec:
+      externalLabels: {}
+      enableAdminAPI: true
+      tsdb:
+        outOfOrderTimeWindow: 30m
+      podMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelector: {}
+      serviceMonitorSelectorNilUsesHelmValues: false
+      serviceMonitorSelector: {}
+      ruleSelectorNilUsesHelmValues: false
+      ruleNamespaceSelector: {}
+      scrapeConfigSelectorNilUsesHelmValues: false
+      scrapeConfigSelector: {}
+      alertmanagerConfigSelector: {}
+      probeSelectorNilUsesHelmValues: true
+      probeSelector: {}
+      retention: "25d"
+      resources:
+        requests:
+          cpu: "500m"
+          memory: "2.5Gi"
+      nodeSelector:
+        kubernetes.io/os: "linux"
+      storageSpec: # TODO maybe snapshot
+        volumeClaimTemplate:
+          spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+              requests:
+                storage: 100Gi
+      additionalScrapeConfigs:
+      - dns_sd_configs:
+        - names:
+          - kubecost-cost-analyzer.kubecost
+          port: 9003
+          type: A
+        honor_labels: true
+        job_name: kubecost
+        metrics_path: /metrics
+        scheme: http
+        scrape_interval: 1m
+        scrape_timeout: 10s
+      - job_name: kubecost-networking
+        kubernetes_sd_configs:
+        - role: pod
+        relabel_configs:
+        - action: keep
+          regex: kubecost-network-costs
+          source_labels:
+          - __meta_kubernetes_pod_label_app
+  # Kubecost Part
+  kubelet:
+    serviceMonitor:
+      cAdvisorMetricRelabelings:
+        - sourceLabels: [ container ]
+          targetLabel: container_name
+          regex: (.+)
+          action: replace
+        - sourceLabels: [ pod ]
+          targetLabel: pod_name
+          regex: (.+)
+          action: replace
+        - sourceLabels: [node]
+          separator: ;
+          regex: (.*)
+          targetLabel: instance
+          replacement: $1
+          action: replace
+          

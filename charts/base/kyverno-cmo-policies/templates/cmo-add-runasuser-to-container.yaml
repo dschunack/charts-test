@@ -1,0 +1,47 @@
+{{- range $runasuser := .Values.policies.mutate.enerkubeRunAsUid }}
+---
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/description: 'This policy adds a uid to containers with specific names'
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Add uids to selected containers
+  generation: 1
+  name: mutating-add-default-uid-to-container-{{ .containername }}
+  namespace: {{ .namespace }}
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      foreach:
+      - list: request.object.spec.containers[]
+        patchesJson6902: |-
+          - path: "/spec/containers/{{`{{`}}elementIndex{{`}}`}}/securityContext/runAsUser"
+            op: add
+            value: {{ .uid }}
+        preconditions:
+          all:
+          - key: '{{`{{`}}request.object.spec.nodeSelector."kubernetes.io/os" | to_string(@){{`}}`}}'
+            operator: NotEquals
+            value: windows
+          - key: "{{`{{`}}element.name{{`}}`}}"
+            operator: Equals
+            value: {{ .containername }}
+    name: testing-add-default-uid-to-container
+    preconditions:
+      all:
+      - key: "{{`{{`}} request.operation {{`}}`}}"
+        operator: AnyIn
+        value:
+        - CREATE
+        - UPDATE
+  validationFailureAction: Audit
+{{- end }}

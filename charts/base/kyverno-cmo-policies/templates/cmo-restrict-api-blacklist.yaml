@@ -1,0 +1,87 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-api-blacklist
+  annotations:
+    policies.kyverno.io/title: Restrict access to specificy resources
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: ClusterRole, Role, RBAC
+    kyverno.io/kyverno-version: 1.7.0
+    policies.kyverno.io/minversion: 1.6.0
+    kyverno.io/kubernetes-version: "1.23"
+    policies.kyverno.io/description: >-
+      Specific apis are forbidden for security reasons (privilege escalation etc.)
+      This policy blocks any Role or ClusterRole that contains apis which could compromise security.      
+spec:
+  validationFailureAction: {{ .Values.policies.validate.RestrictApiBlacklist }}
+  failurePolicy: Fail
+  background: false
+  rules:
+    - name: api-blacklist
+      match:
+        any:
+        - resources:
+            kinds:
+            - Role
+            - ClusterRole
+            namespaceSelector:
+              matchExpressions:
+              - key: enerkube-managed
+                operator: In
+                values:
+                - "true"
+        - resources:
+            kinds:
+            - Role
+            - ClusterRole
+            namespaces:
+              - "default"
+      exclude:
+        any:
+        - clusterRoles:
+          - cluster-admin
+        - subjects:
+          - kind: Group
+            name: system:masters
+      preconditions:
+        all:
+        - key: "{{`{{`}} request.operation {{`}}`}}"
+          operator: AnyIn
+          value:
+          - CREATE
+          - UPDATE
+          - DELETE
+      validate:
+        message: >-
+          "{{`User: {{ request.userInfo.username }} and Groups: {{ request.userInfo.groups }} are not allowed to use API {{ request.object.rules[].apiGroups[] }}.`}}"
+        deny:
+          conditions:
+            any:
+            - key: 
+                - "enercity.de*"
+                - "cert-manager.io*"
+                - "kyverno.io*"
+                - "actions.summerwind.dev*"
+                - "aquasecurity.github.io*"
+                - "certificates.k8s.io*"
+                - "fluxcd.io*"
+                - "node.k8s.io*"
+                - "discovery.k8s.io*"
+                - "acme.cert-manager.io*"
+                - "operator.tigera.io*"
+                - "scheduling.k8s.io*"
+                - "crd.k8s.amazonaws.com"
+                - "flowcontrol.apiserver.k8s.io*"
+                - "authorization.k8s.io*"
+                - "admissionregistration.k8s.io*"
+                - "apiregistration.k8s.io*"
+                - "k8s.amazonaws.com*"
+                - "wgpolicyk8s.io*"
+                - "vpcresources.k8s.aws*"
+                - "elbv2.k8s.aws*"
+                - "storage.k8s.io*"
+                - "external-secrets.io*"
+              operator: AnyIn
+              value: "{{`{{ request.object.rules[].apiGroups[] }}`}}"
+

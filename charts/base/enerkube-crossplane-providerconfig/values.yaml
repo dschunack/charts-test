@@ -1,0 +1,3 @@
+providerconfigs:
+  aws: true
+  kubernetes: false

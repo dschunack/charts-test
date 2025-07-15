@@ -1,0 +1,108 @@
+# ---
+# apiVersion: kyverno.io/v1
+# kind: ClusterPolicy
+# metadata:
+#   name: enerkube-check-crd-access
+#   annotations:
+#     policies.kyverno.io/title: Restrict access on default CRDs
+#     policies.kyverno.io/category: Sample
+#     policies.kyverno.io/subject: CRDs
+#     policies.kyverno.io/description: >-
+#       This Policy blocked the modification of our standard CRDs 
+#       for all users expected our ADFS Groups.
+# spec:
+#   validationFailureAction: {{ .Values.policies.validate.enerkubeCheckCRDAccess }}
+#   background: false
+#   rules:
+#     - name: enerkube-check-crd-access
+#       match:
+#         any:
+#         - resources:
+#             kinds:
+#             - CustomResourceDefinition
+#       preconditions:
+#         all:
+#         - key: "{{`{{ request.operation }}`}}"
+#           operator: AnyIn
+#           value: ["CREATE", "UPDATE", "DELETE", "CONNECT"]
+#         - key: "{{`{{ request.userInfo.username }}`}}"
+#           operator: NotIn
+#           value:
+#             - "ADFS-enerkubeAdmin"
+#             - "ADFS-enerkubeOperator"
+#             - "ADFS-Administrator"
+#             - "system:serviceaccount:kube-system:*"
+#       validate:
+#         message: >-
+#           "{{`User: {{ request.userInfo.username }} and Groups: {{ request.userInfo.groups }} are not allowed to modify {{ request.object.metadata.name }}.`}}"
+#         deny:
+#           conditions:
+#             any:
+#             - key: 
+#                 - "*.enercity.de"
+#                 - "*.kyverno.io"
+#                 - "*.summerwind.dev"
+#                 - "*.aquasecurity.github.io"
+#                 - "*.fluxcd.io"
+#                 - "*.k8s.amazonaws.com"
+#                 - "*.monitoring.coreos.com"
+#                 - "*.wgpolicyk8s.io"
+#                 - "*.elbv2.k8s.aws"
+#                 - "*.external-secrets.io"
+#               operator: AnyIn
+#               value: "{{`{{ request.object.metadata.name }}`}}"
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validating-crd-access
+  annotations:
+    policies.kyverno.io/title: Restrict access on default CRDs
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/subject: CRDs
+    policies.kyverno.io/description: >-
+      This Policy blocked the modification of our standard CRDs excluding the 
+      resources created by ClusterRole cluster-admin OR by the Group system:masters.
+spec:
+  validationFailureAction: {{ .Values.policies.validate.enerkubeCheckCRDAccess }}
+  failurePolicy: Fail
+  background: false
+  rules:
+    - name: check-crd-access
+      match:
+        any:
+        - resources:
+            kinds:
+            - CustomResourceDefinition
+      exclude:
+        any:
+        - clusterRoles:
+          - cluster-admin
+          - "eks:addon-manager-additional"
+        - subjects:
+          - kind: Group
+            name: system:masters
+      preconditions:
+        all:
+        - key: "{{`{{ request.operation }}`}}"
+          operator: AnyIn
+          value: ["CREATE", "UPDATE", "DELETE", "CONNECT"]
+      validate:
+        message: >-
+          "{{`User: {{ request.userInfo.username }} and Groups: {{ request.userInfo.groups }} are not allowed to modify {{ request.object.metadata.name }}.`}}"
+        deny:
+          conditions:
+            any:
+            - key: 
+                - "*.enercity.de"
+                - "*.kyverno.io"
+                - "*.summerwind.dev"
+                - "*.aquasecurity.github.io"
+                - "*.fluxcd.io"
+                - "*.k8s.amazonaws.com"
+                - "*.monitoring.coreos.com"
+                - "*.wgpolicyk8s.io"
+                - "*.elbv2.k8s.aws"
+                - "*.external-secrets.io"
+              operator: AnyIn
+              value: "{{`{{ request.object.metadata.name }}`}}"

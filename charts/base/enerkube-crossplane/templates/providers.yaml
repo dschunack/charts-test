@@ -1,0 +1,77 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-aws-s3
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws-s3:v1
+  runtimeConfigRef: 
+    name: irsa-runtimeconfig-provider-aws-s3
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-aws-iam
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws-iam:v1
+  runtimeConfigRef: 
+    name: irsa-runtimeconfig-provider-aws-iam
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-aws-kms
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws-kms:v1
+  runtimeConfigRef: 
+    name: irsa-runtimeconfig-provider-aws-kms
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-aws-efs
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws-efs:v1
+  runtimeConfigRef: 
+    name: irsa-runtimeconfig-provider-aws-efs
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-aws-ec2
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws-ec2:v1
+  runtimeConfigRef: 
+    name: irsa-runtimeconfig-provider-aws-ec2
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-aws-backup
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws-backup:v1
+  runtimeConfigRef: 
+    name: irsa-runtimeconfig-provider-aws-backup
+{{- if .Values.providers.rds }}
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-aws-rds
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws-rds:v1
+  runtimeConfigRef: 
+    name: irsa-runtimeconfig-provider-aws-rds
+{{- end }}
+{{- if .Values.providers.kubernetes }}
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-kubernetes
+spec:
+  package: xpkg.upbound.io/upbound/provider-kubernetes:v0
+  runtimeConfigRef:
+    apiVersion: pkg.crossplane.io/v1beta1
+    kind: DeploymentRuntimeConfig
+    name: provider-kubernetes
+{{- end }}

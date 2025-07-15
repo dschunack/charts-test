@@ -1,0 +1,14 @@
+{{- $namespaceName := .Values.namespaceName | required ".Values.namespaceName is required." -}}
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    enerkube-eks: {{ .Values.clusterName }}
+    enerkube-managed: {{ .Values.enerkubeManagedNamespace | quote }}
+    department: {{ $namespaceName }}
+    team: {{ $namespaceName }}
+{{- if .Values.AdditionalLabels }}
+{{ toYaml .Values.AdditionalLabels | indent 4 }}
+{{- end }}
+  name: {{ $namespaceName }}

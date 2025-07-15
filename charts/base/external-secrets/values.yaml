@@ -1,0 +1,20 @@
+clusterName: ""
+region: ""
+accountId: ""
+oidcId: ""
+namespace: "enerkube-system"
+serviceAccountController: "external-secret-operator-sa"
+
+# List of namespaces where Parameter Store is enabled
+parameterStoreEnabledNamespaces: []
+
+# List of namespaces where Secrets Manager is enabled
+secretsManagerEnabledNamespaces: []
+
+# If true, adds /enerkube/ prefix to resource paths
+enableSecretsManagerPrefix: true
+enableParameterStorePrefix: true
+
+# If true, deploys ESO in the entire cluster
+enableClusterwideParameterStore: true
+enableClusterwideSecretsManager: true

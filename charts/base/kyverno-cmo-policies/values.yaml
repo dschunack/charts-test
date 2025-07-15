@@ -1,0 +1,40 @@
+policies:
+  enable:
+    RestrictSecretStore: false
+  validate:
+    CheckKernelForCVE: Enforce
+    CheckSupplementalGroups: Audit
+    enerkubeDisallowLatestTag: Enforce
+    enerkubeCheckCRDAccess: Enforce
+    enerkubeCheckDeprecatedApis: Audit
+    PreventCr8escape: Enforce
+    RequireDropAll: Audit
+    RestrictEscalationVerbsRoles: Enforce
+    RestrictResourcesBlacklist: Enforce
+    RestrictWildcardResources: Enforce
+    RestrictApiBlacklist: Enforce
+    RestrictWildcardVerbs: Enforce
+    RestrictBindingClusteradmin: Enforce
+    RestrictPriorityClasses: Audit
+    RequireRunAsNonroot: Audit
+    enerkubeRestrictBindingDefaultSA: Enforce
+    enerkubeDisallowEfsProvisioner: Enforce
+    RequireRunAsNonRootGroups: Audit
+  mutate:
+    enerkubeAddDefaultCapabilities: false
+    enerkubeAddDefaultNamespaceLabels: false
+    enerkubeAddDefaultNodeSelector: true
+    enerkubeRestrictServiceTypeLB: true
+    enerkubeRestrictLBcidrRanges: true
+    enerkubeAddDefaultRunAsNonRoot: false
+    enerkubeAddDefaultCapabilitiesToNamespaces: []
+    # - gha-enerkube-runners
+    # - test
+    enerkubeRunAsUid: []
+    # - namespace: "test"
+    #   containername: "jnlp"
+    #   uid: "1000"
+    enerkubeRunAsGid: []
+    # - namespace: "test"
+    #   containername: "jnlp"
+    #   gid: "1000"

@@ -1,0 +1,141 @@
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: "{{ .Values.clusterName }}-karpenter"
+spec:
+  forProvider:
+    assumeRolePolicy: |
+      {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Sid": "eksKarpenterTrustOIDC",
+                  "Effect": "Allow",
+                  "Principal": {
+                      "Federated": "arn:aws:iam::{{ .Values.accountId }}:oidc-provider/oidc.eks.{{ .Values.region }}.amazonaws.com/id/{{ .Values.oidcId }}"
+                  },
+                  "Action": "sts:AssumeRoleWithWebIdentity",
+                  "Condition": {
+                      "StringEquals": {
+                          "oidc.eks.{{ .Values.region }}.amazonaws.com/id/{{ .Values.oidcId }}:aud": "sts.amazonaws.com",
+                          "oidc.eks.{{ .Values.region }}.amazonaws.com/id/{{ .Values.oidcId }}:sub": "system:serviceaccount:{{ .Values.namespaceName }}:{{ .Values.serviceAccountName }}"
+                      }
+                  }
+              }
+          ]
+      }
+    inlinePolicy:
+      - name: karpenter_policy
+        policy: |
+            {
+                "Statement": [
+                    {
+                        "Action": [
+                            "ssm:GetParameter",
+                            "pricing:GetProducts",
+                            "ec2:RunInstances",
+                            "ec2:DescribeSubnets",
+                            "ec2:DescribeSpotPriceHistory",
+                            "ec2:DescribeSecurityGroups",
+                            "ec2:DescribeLaunchTemplates",
+                            "ec2:DescribeInstances",
+                            "ec2:DescribeInstanceTypes",
+                            "ec2:DescribeInstanceTypeOfferings",
+                            "ec2:DescribeImages",
+                            "ec2:DescribeAvailabilityZones",
+                            "ec2:DeleteLaunchTemplate",
+                            "ec2:CreateTags",
+                            "ec2:CreateLaunchTemplate",
+                            "ec2:CreateFleet"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Sid": "eksKarpenterAll"
+                    },
+                    {
+                        "Action": "ec2:TerminateInstances",
+                        "Condition": {
+                            "StringLike": {
+                                "ec2:ResourceTag/eks:eks-cluster-name": "{{ .Values.clusterName }}"
+                            }
+                        },
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Sid": "eksKarpenterConditionalEC2Termination"
+                    },
+                    {
+                        "Action": "iam:PassRole",
+                        "Effect": "Allow",
+                        "Resource": [
+                            "{{ .Values.workerRoleArn }}",
+                            "{{ .Values.workerWinRoleArn }}"
+                        ],
+                        "Sid": "eksKarpenterPassNodeIAMRole"
+                    },
+                    {
+                        "Action": "eks:DescribeCluster",
+                        "Effect": "Allow",
+                        "Resource": "arn:aws:eks:{{ .Values.region }}:{{ .Values.accountId }}:cluster/{{ .Values.clusterName }}",
+                        "Sid": "eksKarpenterEKSClusterEndpointLookup"
+                    },
+                    {
+                        "Action": "iam:CreateInstanceProfile",
+                        "Condition": {
+                            "StringEquals": {
+                                "aws:RequestTag/kubernetes.io/cluster/{{ .Values.clusterName }}": "owned",
+                                "aws:RequestTag/topology.kubernetes.io/region": "{{ .Values.region }}"
+                            },
+                            "StringLike": {
+                                "aws:RequestTag/karpenter.k8s.aws/ec2nodeclass": "*"
+                            }
+                        },
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Sid": "eksKarpenterAllowScopedInstanceProfileCreationActions"
+                    },
+                    {
+                        "Action": "iam:TagInstanceProfile",
+                        "Condition": {
+                            "StringEquals": {
+                                "aws:RequestTag/kubernetes.io/cluster/{{ .Values.clusterName }}": "owned",
+                                "aws:RequestTag/topology.kubernetes.io/region": "{{ .Values.region }}",
+                                "aws:ResourceTag/kubernetes.io/cluster/{{ .Values.clusterName }}": "owned",
+                                "aws:ResourceTag/topology.kubernetes.io/region": "{{ .Values.region }}"
+                            },
+                            "StringLike": {
+                                "aws:RequestTag/karpenter.k8s.aws/ec2nodeclass": "*",
+                                "aws:ResourceTag/karpenter.k8s.aws/ec2nodeclass": "*"
+                            }
+                        },
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Sid": "eksKarpenterAllowScopedInstanceProfileTagActions"
+                    },
+                    {
+                        "Action": [
+                            "iam:RemoveRoleFromInstanceProfile",
+                            "iam:DeleteInstanceProfile",
+                            "iam:AddRoleToInstanceProfile"
+                        ],
+                        "Condition": {
+                            "StringEquals": {
+                                "aws:ResourceTag/kubernetes.io/cluster/{{ .Values.clusterName }}": "owned",
+                                "aws:ResourceTag/topology.kubernetes.io/region": "{{ .Values.region }}"
+                            },
+                            "StringLike": {
+                                "aws:ResourceTag/karpenter.k8s.aws/ec2nodeclass": "*"
+                            }
+                        },
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Sid": "eksKarpenterAllowScopedInstanceProfileActions"
+                    },
+                    {
+                        "Action": "iam:GetInstanceProfile",
+                        "Effect": "Allow",
+                        "Resource": "*",
+                        "Sid": "eksInstanceProfileReadActions"
+                    }
+                ],
+                "Version": "2012-10-17"
+            }

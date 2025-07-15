@@ -1,0 +1,62 @@
+{{- if .Values.policies.mutate.enerkubeAddDefaultRunAsNonRoot -}}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutating-add-default-runasnonroot
+  annotations:
+    policies.kyverno.io/title: Add Default runAsNonRoot
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      This policy adds the runAsNonRoot field to a Pod spec if not defined.      
+spec:
+  rules:
+    - name: add-default-runasnonroot
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+            namespaceSelector:
+              matchExpressions:
+              - key: enerkube-managed
+                operator: In
+                values:
+                - "true"
+        - resources:
+            kinds:
+            - Pod
+            namespaces:
+              - "default"
+      exclude:
+        resources:
+          selector:
+            matchLabels:
+              strimzi.io/cluster: cipstream
+      preconditions:
+        all:
+        - key: "{{`{{ request.operation }}`}}"
+          operator: NotEquals
+          value: DELETE
+      mutate:
+        patchStrategicMerge:
+          spec:
+            containers:
+              - (name): "*"
+                securityContext:
+                  +(runAsNonRoot): true
+                  +(allowPrivilegeEscalation): false
+                  +(privileged): false
+            initContainers:
+              - (name): "*"
+                securityContext:
+                  +(runAsNonRoot): true
+                  +(allowPrivilegeEscalation): false
+                  +(privileged): false
+            ephemeralContainers:
+              - (name): "*"
+                securityContext:
+                  +(runAsNonRoot): true
+                  +(allowPrivilegeEscalation): false
+                  +(privileged): false
+{{- end -}}

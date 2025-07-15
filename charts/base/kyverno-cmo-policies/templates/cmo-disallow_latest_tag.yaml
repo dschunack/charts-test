@@ -1,0 +1,84 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validating-disallow-latest-tag
+  annotations:
+    policies.kyverno.io/title: Disallow Latest Tag
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/subject: Pod,DaemonSet,Deployment,Job,StatefulSet,CronJob
+    policies.kyverno.io/description: >-
+      The ':latest' tag is mutable and can lead to unexpected errors if the
+      image changes. A best practice is to use an immutable tag that maps to
+      a specific version of an application Pod. This policy validates that the image
+      specifies a tag and that it is not called `latest`.
+spec:
+  validationFailureAction: {{ .Values.policies.validate.enerkubeDisallowLatestTag }}
+  failurePolicy: Fail
+  background: true
+  rules:
+    - name: image-tag-pod-required
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+            namespaceSelector:
+              matchExpressions:
+              - key: enerkube-managed
+                operator: In
+                values:
+                - "true"
+        - resources:
+            kinds:
+            - Pod
+            namespaceSelector:
+              matchExpressions:
+              - key: "kubernetes.io/metadata.name"
+                operator: In
+                values:
+                - "default"
+      validate:
+        message: "An image tag is required."
+        pattern:
+          spec:
+            containers:
+            - image: "*:*"
+      preconditions:
+        all:
+        - key: "{{`{{`}} request.operation {{`}}`}}"
+          operator: AnyIn
+          value:
+          - CREATE
+          - UPDATE
+    - name: image-tag-pod-validate
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+            namespaceSelector:
+              matchExpressions:
+              - key: enerkube-managed
+                operator: In
+                values:
+                - "true"
+        - resources:
+            kinds:
+            - Pod
+            namespaces:
+              - "default"
+      validate:
+        message: "Using a mutable image tag e.g. latest is not allowed."
+        pattern:
+          spec:
+            containers:
+            - image: "!*:latest"
+      preconditions:
+        all:
+        - key: "{{`{{`}} request.operation {{`}}`}}"
+          operator: AnyIn
+          value:
+          - CREATE
+          - UPDATE

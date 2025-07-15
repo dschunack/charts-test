@@ -1,0 +1,234 @@
+
+{{- /*
+Namespace-specific IAM Roles, Policies, and Attachments
+- Parameter Store access for namespaces
+- Dynamic resource generation via Helm values
+*/ -}}
+
+{{- if and .Values.secretsManagerEnabledNamespaces (gt (len .Values.secretsManagerEnabledNamespaces) 0) }}
+{{- range .Values.secretsManagerEnabledNamespaces }}
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: "{{ $.Values.clusterName }}-eso-secretmanager-{{ . }}"
+  labels:
+    role: "{{ $.Values.clusterName }}-eso-secretmanager-{{ . }}"
+spec:
+  forProvider:
+    assumeRolePolicy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "arn:aws:iam::{{ $.Values.accountId }}:oidc-provider/oidc.eks.{{ $.Values.region }}.amazonaws.com/id/{{ $.Values.oidcId }}"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "oidc.eks.{{ $.Values.region }}.amazonaws.com/id/{{ $.Values.oidcId }}:sub": "system:serviceaccount:{{ . }}:enerkube-eso-secretsmanager-sa"
+              }
+            }
+          },
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": "arn:aws:iam::{{ $.Values.accountId }}:role/{{ $.Values.clusterName }}-eso"
+            },
+            "Action": "sts:AssumeRole"
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Policy
+metadata:
+  name: "{{ $.Values.clusterName }}-secretmanager-{{ . }}"
+  labels:
+    policy: "{{ $.Values.clusterName }}-secretmanager-{{ . }}"
+spec:
+  forProvider:
+    policy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+              "Action": [
+                  "secretsmanager:UpdateSecret",
+                  "secretsmanager:PutSecretValue",
+                  "secretsmanager:ListSecretVersionIds",
+                  "secretsmanager:GetSecretValue",
+                  "secretsmanager:GetResourcePolicy",
+                  "secretsmanager:DescribeSecret",
+                  "secretsmanager:DeleteSecret",
+                  "secretsmanager:CreateSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:secretsmanager:{{ $.Values.region }}:{{ $.Values.accountId }}:secret:{{- if $.Values.enableSecretsManagerPrefix -}}/enerkube/{{ $.Values.clusterName }}/{{ . }}/*{{- else -}}{{ . }}/*{{- end }}"
+          },
+          {
+              "Action": "secretsmanager:ListSecrets",
+              "Effect": "Allow",
+              "Resource": "*"
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: "{{ $.Values.clusterName }}-secretmanager-{{ . }}"
+spec:
+  forProvider:
+    roleSelector:
+      matchLabels:
+        role: "{{ $.Values.clusterName }}-eso-secretmanager-{{ . }}"
+    policyArnSelector:
+      matchLabels:
+        policy: "{{ $.Values.clusterName }}-secretmanager-{{ . }}"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::{{ $.Values.accountId }}:role/{{ $.Values.clusterName }}-eso-secretmanager-{{ . }}"
+  name: enerkube-eso-secretsmanager-sa
+  namespace: {{ . }}
+---
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: secretstore-secrets-manager
+  namespace: {{ . }}
+spec:
+  provider:
+    aws:
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: enerkube-eso-secretsmanager-sa
+      region: {{ $.Values.region }}
+      service: SecretsManager
+      # {{- if $.Values.enableSecretsManagerPrefix }}
+      # prefix: "/enerkube/{{ $.Values.clusterName }}/{{ . }}/"
+      # {{ else }}
+      # prefix: "/{{ . }}/"
+      # {{- end }}
+---
+{{- end }}
+{{- else }}
+# If no Secrets Manager namespaces enabled
+{{- end }}
+
+{{- if and .Values.parameterStoreEnabledNamespaces (gt (len .Values.parameterStoreEnabledNamespaces) 0) }}
+{{- range .Values.parameterStoreEnabledNamespaces }}
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: "{{ $.Values.clusterName }}-eso-paramstore-{{ . }}"
+  labels:
+    role: "{{ $.Values.clusterName }}-eso-paramstore-{{ . }}"
+spec:
+  forProvider:
+    assumeRolePolicy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "arn:aws:iam::{{ $.Values.accountId }}:oidc-provider/oidc.eks.{{ $.Values.region }}.amazonaws.com/id/{{ $.Values.oidcId }}"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "oidc.eks.{{ $.Values.region }}.amazonaws.com/id/{{ $.Values.oidcId }}:sub": "system:serviceaccount:{{ . }}:enerkube-eso-paramstore-sa"
+              }
+            }
+          },
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": "arn:aws:iam::{{ $.Values.accountId }}:role/{{ $.Values.clusterName }}-eso"
+            },
+            "Action": "sts:AssumeRole"
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Policy
+metadata:
+  name: "{{ $.Values.clusterName }}-paramstore-{{ . }}"
+  labels:
+    policy: "{{ $.Values.clusterName }}-paramstore-{{ . }}"
+spec:
+  forProvider:
+    policy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ssm:GetParameter",
+              "ssm:GetParameters",
+              "ssm:GetParametersByPath",
+              "ssm:DescribeParameters",
+              "ssm:PutParameter",
+              "ssm:DeleteParameter",
+              "ssm:DeleteParameters"
+            ],
+            "Resource": "arn:aws:ssm:{{ $.Values.region }}:{{ $.Values.accountId }}:parameter{{- if $.Values.enableParameterStorePrefix -}}/enerkube/{{ $.Values.clusterName }}/{{ . }}/*{{- else -}}/{{ . }}/*{{- end }}"
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: "{{ $.Values.clusterName }}-paramstore-{{ . }}"
+spec:
+  forProvider:
+    roleSelector:
+      matchLabels:
+        role: "{{ $.Values.clusterName }}-eso-paramstore-{{ . }}"
+    policyArnSelector:
+      matchLabels:
+        policy: "{{ $.Values.clusterName }}-paramstore-{{ . }}"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::{{ $.Values.accountId }}:role/{{ $.Values.clusterName }}-eso-paramstore-{{ . }}
+  name: enerkube-eso-paramstore-sa
+  namespace: {{ . }}
+---
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: secretstore-parameter-store
+  namespace: {{ . }}
+spec:
+  provider:
+    aws:
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: enerkube-eso-paramstore-sa
+      service: "ParameterStore"
+      region: "{{ $.Values.region }}"
+      # {{- if $.Values.enableParameterStorePrefix }}
+      # prefix: "/enerkube/{{ $.Values.clusterName }}/{{ . }}/"
+      # {{ else }}
+      # prefix: "/{{ . }}/"
+      # {{- end }}
+---
+{{- end }}
+{{- else }}
+# If no Parameter Store namespaces enabled
+{{- end }}

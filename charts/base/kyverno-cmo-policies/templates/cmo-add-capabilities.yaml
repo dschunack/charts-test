@@ -1,0 +1,66 @@
+{{- if .Values.policies.mutate.enerkubeAddDefaultCapabilities -}}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutating-add-default-capabilities
+  annotations:
+    policies.kyverno.io/title: Add Default Capabilities
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/subject: Pod
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/description: >-
+      This policy adds the Default Capabilities field to a Pod spec if not defined.    
+spec:
+  rules:
+    - name: add-default-capabilities
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+            namespaceSelector:
+              matchExpressions:
+              - key: enerkube-managed
+                operator: In
+                values:
+                - "true"
+        - resources:
+            kinds:
+            - Pod
+            namespaces:
+              - "default"
+      exclude:
+        resources:
+          selector:
+            matchLabels:
+              strimzi.io/cluster: cipstream
+      preconditions:
+        all:
+        - key: "{{`{{`}} request.operation {{`}}`}}"
+          operator: AnyIn
+          value:
+            - CREATE
+            - UPDATE
+      mutate:
+        foreach:
+        - list: request.object.spec.containers[]
+          preconditions:
+            all:
+            - key: ALL
+              operator: AnyNotIn
+              value: "{{`{{`}}element.securityContext.capabilities.drop[] ||  `[]` {{`}}`}}"
+          patchesJson6902: |-
+            - path: "/spec/containers/{{`{{`}}elementIndex{{`}}`}}/securityContext/capabilities/drop/-"
+              op: add
+              value: ALL
+        - list: request.object.spec.initContainers[]
+          preconditions:
+            all:
+            - key: ALL
+              operator: AnyNotIn
+              value: "{{`{{`}}element.securityContext.capabilities.drop[] || `[]` {{`}}`}}"
+          patchesJson6902: |-
+            - path: "/spec/initContainers/{{`{{`}}elementIndex{{`}}`}}/securityContext/capabilities/drop/-"
+              op: add
+              value: ALL
+{{- end -}}

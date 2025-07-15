@@ -1,0 +1,48 @@
+apiVersion: v2
+name: monitoring-exporter-stack
+description: A Helm chart for Kubernetes
+
+# A chart can be either an 'application' or a 'library' chart.
+#
+# Application charts are a collection of templates that can be packaged into versioned archives
+# to be deployed.
+#
+# Library charts provide useful utilities or functions for the chart developer. They're included as
+# a dependency of application charts to inject those utilities and functions into the rendering
+# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 1.0.2-rc1
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+
+dependencies:
+- name: monitoring-exporter-infrastructure
+  version: "1.0.1"
+  repository: "https://github.geo.conti.de/pages/Cloud-Platform-Services/cmo-charts/"
+- name: helm-exporter
+  version: "1.2.16"
+  repository: "https://shanestarcher.com/helm-charts"
+  condition: helm-exporter.enabled
+- name: cloud-exporter
+  version: "0.3.2"
+  repository: "https://steveizzle.github.io/monitor_subnets/"
+  condition: cloud-exporter.enabled
+- name: dcgm-exporter
+  version: "4.1.1"
+  repository: "https://nvidia.github.io/dcgm-exporter/helm-charts"
+  condition: nvidia-dcgm-exporter.enabled
+- name: prometheus-windows-exporter
+  version: "0.10.3"
+  repository: "https://prometheus-community.github.io/helm-charts"
+  condition: prometheus-windows-exporter.enabled
+- name: node-problem-detector
+  version: "2.3.14"
+  repository: "https://charts.deliveryhero.io/"
+  condition: node-problem-detector.enabled

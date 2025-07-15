@@ -1,0 +1,19 @@
+{{- if .Values.allowKubesystem }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations:
+    rbac.authorization.kubernetes.io/autoupdate: "true"
+  name: read-pod-logs-kube-system-{{ .Values.namespaceName }}
+  namespace: kube-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods/log
+  - pods
+  verbs:
+  - list
+  - watch
+  - get
+{{- end }}

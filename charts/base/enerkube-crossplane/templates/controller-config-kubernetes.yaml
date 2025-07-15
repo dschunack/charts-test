@@ -1,0 +1,43 @@
+{{- if .Values.providers.kubernetes }}
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata:
+  name: provider-kubernetes
+spec:
+  serviceAccountTemplate:
+    metadata:
+      name: provider-kubernetes
+  deploymentTemplate:
+    spec:
+      selector: {}
+      template:
+        spec:
+          containers:
+          - name: package-runtime
+            resources:
+              requests:
+                memory: 100m
+          priorityClassName: system-cluster-critical
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: enerkube-provider-kubernetes
+aggregationRule:
+  clusterRoleSelectors:
+  - matchLabels:
+      rbac.enerkube/aggregate-to-enerkube-provider-kubernetes: "true"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name:  enerkube-provider-kubernetes
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name:  enerkube-provider-kubernetes
+subjects:
+- kind: ServiceAccount
+  name: provider-kubernetes
+  namespace: enerkube-system
+{{- end }}

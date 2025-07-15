@@ -1,0 +1,42 @@
+{{- if .Values.didShares.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: enerkube-aggregate-composition-did-share
+  labels:
+    rbac.enerkube/aggregate-to-enerkube-provider-kubernetes: "true"
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumes
+  - persistentvolumeclaims
+  verbs:
+  - create
+  - list
+  - update
+  - patch
+  - delete
+  - get
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: enerkube:composition-did-share:edit
+  labels:
+    rbac.authorization.k8s.io/aggregate-to-edit: "true"
+rules:
+- apiGroups:
+  - "enerkube.conti.de"
+  resources:
+  - didshares
+  verbs:
+  - create
+  - list
+  - update
+  - patch
+  - delete
+  - get
+  - watch
+{{- end }}
