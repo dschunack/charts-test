@@ -25,7 +25,7 @@ version: 0.6.2
 dependencies:
 - name: enerkube-karpenter-infrastructure
   version: "0.1.4"
-  repository: "https://enercity.ghe.com/pages/enercity-iac/enerkube-charts/"
+  repository: "https://enercity-iac-enerkube-charts.pages.enercity.ghe.com/"
 - name: karpenter-crd
   version: "1.4.0"
   repository: "oci://public.ecr.aws/karpenter"
@@ -34,4 +34,4 @@ dependencies:
   repository: "oci://public.ecr.aws/karpenter"
 - name: karpenter-nodepool
   version: "1.4.2"
-  repository: "https://enercity.ghe.com/pages/enercity-iac/enerkube-charts/"
+  repository: "https://enercity-iac-enerkube-charts.pages.enercity.ghe.com/"

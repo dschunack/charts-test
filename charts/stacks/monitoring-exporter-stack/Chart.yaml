@@ -25,7 +25,7 @@ version: 1.0.2-rc1
 dependencies:
 - name: monitoring-exporter-infrastructure
   version: "1.0.1"
-  repository: "https://enercity.ghe.com/pages/enercity-iac/enerkube-charts/"
+  repository: "https://enercity-iac-enerkube-charts.pages.enercity.ghe.com/"
 - name: helm-exporter
   version: "1.2.16"
   repository: "https://shanestarcher.com/helm-charts"
