@@ -21,7 +21,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          unset GIT_DIR
+          ls -al
+          export
           git config user.name "BOT"
           git config user.email "BOT@users.noreply.github.com"
 
