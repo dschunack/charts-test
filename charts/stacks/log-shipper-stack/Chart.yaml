@@ -25,7 +25,7 @@ version: 1.0.1-rc1
 dependencies:
 - name: logging-operator-crds
   version: "1.0.0"
-  repository: "https://github.geo.conti.de/pages/Cloud-Platform-Services/cmo-charts/"
+  repository: "https://enercity.ghe.com/pages/enercity-iac/enerkube-charts/"
 - name: logging-operator
   version: "5.3.0"
   repository: "oci://ghcr.io/kube-logging/helm-charts"
@@ -34,4 +34,4 @@ dependencies:
   repository: "https://kube-logging.github.io/helm-charts"
 - name: log-shipper-fluentbit-windows
   version: "1.0.0"
-  repository: "https://github.geo.conti.de/pages/Cloud-Platform-Services/cmo-charts/"
+  repository: "https://enercity.ghe.com/pages/enercity-iac/enerkube-charts/"

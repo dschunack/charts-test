@@ -1,2 +1,2 @@
-# cmo-charts
+# enerkube-charts
 Master helm chart Repository

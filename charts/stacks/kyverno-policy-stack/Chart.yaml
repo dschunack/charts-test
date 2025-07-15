@@ -26,6 +26,6 @@ dependencies:
 - name: kyverno-policies
   version: "3.4.1"
   repository: "https://kyverno.github.io/kyverno/"
-- name: kyverno-cmo-policies
+- name: kyverno-enerkube-policies
   version: "0.13.18"
-  repository: "https://github.geo.conti.de/pages/Cloud-Platform-Services/cmo-charts"
+  repository: "https://enercity.ghe.com/pages/enercity-iac/enerkube-charts"

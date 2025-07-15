@@ -23,9 +23,9 @@ version: 0.6.2
 # It is recommended to use it with quotes.
 
 dependencies:
-- name: cmo-karpenter-infrastructure
+- name: enerkube-karpenter-infrastructure
   version: "0.1.4"
-  repository: "https://github.geo.conti.de/pages/Cloud-Platform-Services/cmo-charts/"
+  repository: "https://enercity.ghe.com/pages/enercity-iac/enerkube-charts/"
 - name: karpenter-crd
   version: "1.4.0"
   repository: "oci://public.ecr.aws/karpenter"
@@ -34,4 +34,4 @@ dependencies:
   repository: "oci://public.ecr.aws/karpenter"
 - name: karpenter-nodepool
   version: "1.4.2"
-  repository: "https://github.geo.conti.de/pages/Cloud-Platform-Services/cmo-charts/"
+  repository: "https://enercity.ghe.com/pages/enercity-iac/enerkube-charts/"
