@@ -1,11 +1,15 @@
-apiVersion: aws.upbound.io/v1beta1
+---
+apiVersion: azure.upbound.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: default
 spec:
   credentials:
-    source: IRSA
-{{- if .Values.providerconfigs.kubernetes }}
+    source: OIDCTokenFile
+  oidcTokenFilePath: /var/run/secrets/azure/tokens/azure-identity-token
+  subscriptionID: e412c397-7c30-4b15-9613-7c093095e3eb
+  tenantID: 8ccd2b24-2b70-401a-a933-bf4010009e5e
+  clientID: 7e8b11ff-9959-4e63-9559-8f0994f0c7f8
 ---
 apiVersion: kubernetes.crossplane.io/v1alpha1
 kind: ProviderConfig
@@ -14,4 +18,3 @@ metadata:
 spec:
   credentials:
     source: InjectedIdentity
-{{- end }}

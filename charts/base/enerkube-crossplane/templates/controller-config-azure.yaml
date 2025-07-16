@@ -15,6 +15,9 @@ spec:
     spec:
       selector: {}
       template:
+        metadata:
+          labels:
+            azure.workload.identity/use: 'true'
         spec:
           containers:
           - name: package-runtime
@@ -39,6 +42,9 @@ spec:
     spec:
       selector: {}
       template:
+        metadata:
+          labels:
+            azure.workload.identity/use: 'true'
         spec:
           containers:
           - name: package-runtime
@@ -63,6 +69,9 @@ spec:
     spec:
       selector: {}
       template:
+        metadata:
+          labels:
+            azure.workload.identity/use: 'true'
         spec:
           containers:
           - name: package-runtime
@@ -87,6 +96,9 @@ spec:
     spec:
       selector: {}
       template:
+        metadata:
+          labels:
+            azure.workload.identity/use: 'true'
         spec:
           containers:
           - name: package-runtime
