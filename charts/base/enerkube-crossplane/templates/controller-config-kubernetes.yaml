@@ -1,4 +1,4 @@
-{{- if .Values.providers.kubernetes }}
+---
 apiVersion: pkg.crossplane.io/v1beta1
 kind: DeploymentRuntimeConfig
 metadata:
@@ -40,4 +40,3 @@ subjects:
 - kind: ServiceAccount
   name: provider-kubernetes
   namespace: enerkube-system
-{{- end }}

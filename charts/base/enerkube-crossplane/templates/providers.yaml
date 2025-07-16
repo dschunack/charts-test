@@ -1,68 +1,39 @@
-apiVersion: pkg.crossplane.io/v1
-kind: Provider
-metadata:
-  name: provider-aws-s3
-spec:
-  package: xpkg.upbound.io/upbound/provider-aws-s3:v1
-  runtimeConfigRef: 
-    name: irsa-runtimeconfig-provider-aws-s3
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
 metadata:
-  name: provider-aws-iam
+  name: provider-family-azure
 spec:
-  package: xpkg.upbound.io/upbound/provider-aws-iam:v1
+  package: xpkg.upbound.io/upbound/provider-family-azure:v1
   runtimeConfigRef: 
-    name: irsa-runtimeconfig-provider-aws-iam
+    name: provider-family-azure
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
 metadata:
-  name: provider-aws-kms
+  name: provider-azure-management
 spec:
-  package: xpkg.upbound.io/upbound/provider-aws-kms:v1
+  package: xpkg.upbound.io/upbound/provider-azure-management:v1
   runtimeConfigRef: 
-    name: irsa-runtimeconfig-provider-aws-kms
+    name: provider-azure-management
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
 metadata:
-  name: provider-aws-efs
+  name: provider-azure-compute
 spec:
-  package: xpkg.upbound.io/upbound/provider-aws-efs:v1
+  package: xpkg.upbound.io/upbound/provider-azure-compute:v1
   runtimeConfigRef: 
-    name: irsa-runtimeconfig-provider-aws-efs
+    name: provider-azure-compute
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
 metadata:
-  name: provider-aws-ec2
+  name: provider-azure-network
 spec:
-  package: xpkg.upbound.io/upbound/provider-aws-ec2:v1
+  package: xpkg.upbound.io/upbound/provider-azure-network:v1
   runtimeConfigRef: 
-    name: irsa-runtimeconfig-provider-aws-ec2
----
-apiVersion: pkg.crossplane.io/v1
-kind: Provider
-metadata:
-  name: provider-aws-backup
-spec:
-  package: xpkg.upbound.io/upbound/provider-aws-backup:v1
-  runtimeConfigRef: 
-    name: irsa-runtimeconfig-provider-aws-backup
-{{- if .Values.providers.rds }}
----
-apiVersion: pkg.crossplane.io/v1
-kind: Provider
-metadata:
-  name: provider-aws-rds
-spec:
-  package: xpkg.upbound.io/upbound/provider-aws-rds:v1
-  runtimeConfigRef: 
-    name: irsa-runtimeconfig-provider-aws-rds
-{{- end }}
-{{- if .Values.providers.kubernetes }}
+    name: provider-azure-network
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -74,4 +45,3 @@ spec:
     apiVersion: pkg.crossplane.io/v1beta1
     kind: DeploymentRuntimeConfig
     name: provider-kubernetes
-{{- end }}

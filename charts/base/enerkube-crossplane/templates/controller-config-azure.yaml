@@ -1,0 +1,96 @@
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata:
+  name: provider-family-azure
+spec:
+  serviceAccountTemplate:
+    metadata:
+      name: enerkube-provider-azure-family
+      labels:
+        azure.workload.identity/use: 'true'
+      annotations:
+        azure.workload.identity/client-id: "7e8b11ff-9959-4e63-9559-8f0994f0c7f8"
+  deploymentTemplate:
+    spec:
+      selector: {}
+      template:
+        spec:
+          containers:
+          - name: package-runtime
+            resources:
+              requests:
+                memory: 100m
+          priorityClassName: system-cluster-critical
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata:
+  name: provider-azure-management
+spec:
+  serviceAccountTemplate:
+    metadata:
+      name: enerkube-provider-azure-management
+      labels:
+        azure.workload.identity/use: 'true'
+      annotations:
+        azure.workload.identity/client-id: "7e8b11ff-9959-4e63-9559-8f0994f0c7f8"
+  deploymentTemplate:
+    spec:
+      selector: {}
+      template:
+        spec:
+          containers:
+          - name: package-runtime
+            resources:
+              requests:
+                memory: 100m
+          priorityClassName: system-cluster-critical
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata:
+  name: provider-azure-compute
+spec:
+  serviceAccountTemplate:
+    metadata:
+      name: enerkube-provider-azure-compute
+      labels:
+        azure.workload.identity/use: 'true'
+      annotations:
+        azure.workload.identity/client-id: "7e8b11ff-9959-4e63-9559-8f0994f0c7f8"
+  deploymentTemplate:
+    spec:
+      selector: {}
+      template:
+        spec:
+          containers:
+          - name: package-runtime
+            resources:
+              requests:
+                memory: 100m
+          priorityClassName: system-cluster-critical
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata:
+  name: provider-azure-network
+spec:
+  serviceAccountTemplate:
+    metadata:
+      name: enerkube-provider-azure-network
+      labels:
+        azure.workload.identity/use: 'true'
+      annotations:
+        azure.workload.identity/client-id: "7e8b11ff-9959-4e63-9559-8f0994f0c7f8"
+  deploymentTemplate:
+    spec:
+      selector: {}
+      template:
+        spec:
+          containers:
+          - name: package-runtime
+            resources:
+              requests:
+                memory: 100m
+          priorityClassName: system-cluster-critical
