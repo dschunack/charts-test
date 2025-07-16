@@ -1,3 +1,6 @@
+tenantID: ""
+subscriptionId: ""
+clinetId: ""
+clusterName: ""
 providerconfigs:
-  aws: true
-  kubernetes: false
+  TBD: true
