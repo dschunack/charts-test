@@ -1,3 +1,3 @@
-git-base-url: https://enercity.ghe.com/api/v3
-git-upload-url: https://enercity.ghe.com/api/uploads
+git-base-url: https://api.enercity.ghe.com/v3
+git-upload-url: https://api.enercity.ghe.com/uploads
 skip-existing: true
