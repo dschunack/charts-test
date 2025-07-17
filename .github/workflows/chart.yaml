@@ -10,9 +10,9 @@ on:
 jobs:
   release_chart:
     runs-on: gha-enterprise-basic
-    container:
-      image: dschunack/standard-init-container:1.0.0
-      options: --user 1001
+    #container:
+    #  image: dschunack/standard-init-container:1.0.0
+    #  options: --user 1001
     steps:
       - name: Checkout
         uses: actions/checkout@v2
