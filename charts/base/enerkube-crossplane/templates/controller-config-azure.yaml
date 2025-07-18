@@ -1,3 +1,8 @@
+tenantID: ""
+subscriptionId: ""
+clinetId: ""
+clusterName: ""
+
 ---
 apiVersion: pkg.crossplane.io/v1beta1
 kind: DeploymentRuntimeConfig
@@ -10,7 +15,7 @@ spec:
       labels:
         azure.workload.identity/use: 'true'
       annotations:
-        azure.workload.identity/client-id: "7e8b11ff-9959-4e63-9559-8f0994f0c7f8"
+        azure.workload.identity/client-id: {{ $.Values.clinetId }}
   deploymentTemplate:
     spec:
       selector: {}
@@ -37,7 +42,7 @@ spec:
       labels:
         azure.workload.identity/use: 'true'
       annotations:
-        azure.workload.identity/client-id: "7e8b11ff-9959-4e63-9559-8f0994f0c7f8"
+        azure.workload.identity/client-id: {{ $.Values.clinetId }}
   deploymentTemplate:
     spec:
       selector: {}
@@ -64,7 +69,7 @@ spec:
       labels:
         azure.workload.identity/use: 'true'
       annotations:
-        azure.workload.identity/client-id: "7e8b11ff-9959-4e63-9559-8f0994f0c7f8"
+        azure.workload.identity/client-id: {{ $.Values.clinetId }}
   deploymentTemplate:
     spec:
       selector: {}
@@ -91,7 +96,7 @@ spec:
       labels:
         azure.workload.identity/use: 'true'
       annotations:
-        azure.workload.identity/client-id: "7e8b11ff-9959-4e63-9559-8f0994f0c7f8"
+        azure.workload.identity/client-id: {{ $.Values.clinetId }}
   deploymentTemplate:
     spec:
       selector: {}

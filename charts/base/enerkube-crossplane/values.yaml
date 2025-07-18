@@ -1,7 +1,4 @@
-tenantID: ""
-subscriptionId: ""
 clinetId: ""
-clusterName: ""
 providers:
   TBD: true
 
