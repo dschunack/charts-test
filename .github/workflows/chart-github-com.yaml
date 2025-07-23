@@ -44,6 +44,7 @@ jobs:
           config: cr-github-com.yaml
         env:
           CR_TOKEN: "${{ secrets.GH_COM_TOKEN }}"
+          GITHUB_REPOSITORY: "dschunack/charts-test"
 
       - name: Sleep
         run: |
@@ -56,4 +57,4 @@ jobs:
           config: cr-github-com.yaml
         env:
           CR_TOKEN: "${{ secrets.GH_COM_TOKEN }}"
-
+          GITHUB_REPOSITORY: "dschunack/charts-test"
