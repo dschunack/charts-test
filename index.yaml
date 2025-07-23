@@ -83,6 +83,23 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/karpenter-nodepool-1.4.2/karpenter-nodepool-1.4.2.tgz
     version: 1.4.2
+  karpenter-stack:
+  - apiVersion: v2
+    created: "2025-07-23T08:04:10.468019073Z"
+    dependencies:
+    - name: karpenter-crd
+      repository: oci://public.ecr.aws/karpenter
+      version: 1.4.0
+    - name: karpenter
+      repository: oci://public.ecr.aws/karpenter
+      version: 1.4.0
+    description: A Helm chart for Kubernetes
+    digest: 37a296e64b1f7d9703a60a2f01922989e3d567f32b3d068fda41b24cba743d18
+    name: karpenter-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/karpenter-stack-0.6.2/karpenter-stack-0.6.2.tgz
+    version: 0.6.2
   kyverno-enerkube-policies:
   - apiVersion: v2
     appVersion: 1.13.0
@@ -94,6 +111,54 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/kyverno-enerkube-policies-0.13.18/kyverno-enerkube-policies-0.13.18.tgz
     version: 0.13.18
+  kyverno-policy-stack:
+  - apiVersion: v2
+    created: "2025-07-23T08:04:10.669658184Z"
+    dependencies:
+    - name: kyverno-policies
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.4.1
+    description: A Helm chart for Kubernetes
+    digest: fd2ad43209947eec3bb146599758fb08241e611930647390ade7a3a88e0be03e
+    name: kyverno-policy-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/kyverno-policy-stack-0.2.2/kyverno-policy-stack-0.2.2.tgz
+    version: 0.2.2
+  kyverno-stack:
+  - apiVersion: v2
+    created: "2025-07-23T08:04:10.954797928Z"
+    dependencies:
+    - name: kyverno
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.4.1
+    - name: policy-reporter
+      repository: https://kyverno.github.io/policy-reporter/
+      version: 3.1.4
+    description: A Helm chart for Kubernetes
+    digest: a56d4e65fcb68b361b370ec5dc7b117e15a59266b1597cd932d5e70437eaa244
+    name: kyverno-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/kyverno-stack-0.3.1/kyverno-stack-0.3.1.tgz
+    version: 0.3.1
+  log-shipper-stack:
+  - apiVersion: v2
+    created: "2025-07-23T08:04:11.176605518Z"
+    dependencies:
+    - name: logging-operator
+      repository: oci://ghcr.io/kube-logging/helm-charts
+      version: 5.3.0
+    - name: logging-operator-logging
+      repository: https://kube-logging.github.io/helm-charts
+      version: 4.2.2
+    description: A Helm chart for Kubernetes
+    digest: 6dde2506da28fca6e54e19ae37da588e3d3bfbd720d6e7bcc379e6e81f491022
+    name: log-shipper-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/log-shipper-stack-1.0.1-rc1/log-shipper-stack-1.0.1-rc1.tgz
+    version: 1.0.1-rc1
   logging-operator-crds:
   - apiVersion: v2
     created: "2025-07-23T08:03:06.840902123Z"
@@ -124,6 +189,20 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/loki-infrastructure-1.2.0/loki-infrastructure-1.2.0.tgz
     version: 1.2.0
+  loki-stack:
+  - apiVersion: v2
+    created: "2025-07-23T08:04:11.403415123Z"
+    dependencies:
+    - name: loki
+      repository: https://grafana.github.io/helm-charts
+      version: 6.29.0
+    description: A Helm chart for Kubernetes
+    digest: afa409394ac45bb65ae1a77fcd18b671fe4db5a58ae7defcc361c0e8c35e30b9
+    name: loki-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/loki-stack-1.0.6/loki-stack-1.0.6.tgz
+    version: 1.0.6
   monitoring-exporter-infrastructure:
   - apiVersion: v2
     created: "2025-07-23T08:03:07.47696104Z"
@@ -134,6 +213,37 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/monitoring-exporter-infrastructure-1.0.1/monitoring-exporter-infrastructure-1.0.1.tgz
     version: 1.0.1
+  monitoring-exporter-stack:
+  - apiVersion: v2
+    created: "2025-07-23T08:04:11.638227226Z"
+    dependencies:
+    - condition: helm-exporter.enabled
+      name: helm-exporter
+      repository: https://shanestarcher.com/helm-charts
+      version: 1.2.16
+    - condition: cloud-exporter.enabled
+      name: cloud-exporter
+      repository: https://steveizzle.github.io/monitor_subnets/
+      version: 0.3.2
+    - condition: nvidia-dcgm-exporter.enabled
+      name: dcgm-exporter
+      repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+      version: 4.1.1
+    - condition: prometheus-windows-exporter.enabled
+      name: prometheus-windows-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 0.10.3
+    - condition: node-problem-detector.enabled
+      name: node-problem-detector
+      repository: https://charts.deliveryhero.io/
+      version: 2.3.14
+    description: A Helm chart for Kubernetes
+    digest: 7722794860a94c5c4550c240235db2f8207ad494e7621c28e94902acc9185cdb
+    name: monitoring-exporter-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/monitoring-exporter-stack-1.0.2-rc1/monitoring-exporter-stack-1.0.2-rc1.tgz
+    version: 1.0.2-rc1
   monitoring-infrastructure:
   - apiVersion: v2
     created: "2025-07-23T08:03:07.679641704Z"
@@ -144,6 +254,23 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/monitoring-infrastructure-1.0.1/monitoring-infrastructure-1.0.1.tgz
     version: 1.0.1
+  monitoring-stack:
+  - apiVersion: v2
+    created: "2025-07-23T08:04:11.898681533Z"
+    dependencies:
+    - name: prometheus-operator-crds
+      repository: https://prometheus-community.github.io/helm-charts/
+      version: 13.0.2
+    - name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts/
+      version: 61.9.0
+    description: A Helm chart for Kubernetes
+    digest: 25ffe49c34e01288ed17748b049257b2a8b28beb79b46e49e84c52cbdf80c2da
+    name: monitoring-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/monitoring-stack-1.1.0/monitoring-stack-1.1.0.tgz
+    version: 1.1.0
   trivy-operator-iam:
   - apiVersion: v2
     created: "2025-07-23T08:03:07.895808765Z"
@@ -154,4 +281,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-23T08:03:07.895819896Z"
+generated: "2025-07-23T08:04:11.898693054Z"
