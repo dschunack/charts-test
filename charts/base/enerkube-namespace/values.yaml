@@ -1,0 +1,54 @@
+# Common Values
+namespaceName: ""
+clusterName: ""
+
+# Creation of ServiceAccounts and ClusterRolebindings
+createDefault: true
+createReadOnly: true
+createPrivileged: false # For legacy namespaces which still use privileged
+
+kubeconfig:
+  # Enables creation job for kubeconfigs
+  create: true
+  # Namespace where kubeconfig secrets are created -> If empty defaults to user namespace!
+  namespace: ""
+  # Namespace where the kubeconfig creation job is run
+  jobNamespace: enerkube-namespaces
+
+# Endpoint for kubeconfig creation, e.g. https://6C68392CD711CBC02DFBD4F50456A1A2.gr7.eu-central-1.eks.amazonaws.com
+clusterEndpoint: ""
+
+managementNamespace: false
+
+# Enables default kyverno policies
+enerkubeManagedNamespace: "true"
+
+AdditionalLabels: {}
+  # key1: value1
+  # key2: value2
+
+# Allow read of pods and pod logs in kube-system from default-service-account
+allowKubesystem: false
+
+# NamespaceInfo Values:
+namespaceinfo:
+  accountId: ""
+  enerkubeAlerting: []
+  enerkubeConsolidationUnit: "None"
+  enerkubeCostcenter: "None"
+  enerkubeCostresponsible: "None"
+  enerkubeEsign: "None"
+  cloudProvider: "AWS"
+  region: "eu-central-1"
+  enerkubeResponsible: "None"
+  wbsElement: "None"
+
+permissions:
+  view: []
+    # - namespace: ccp
+    #   serviceAccount: read-only
+    # - namespace: ccp2
+    #   serviceAccount: read-only
+  edit: []
+    # - namespace: ccp
+    #   serviceAccount: default-login-serviceaccount

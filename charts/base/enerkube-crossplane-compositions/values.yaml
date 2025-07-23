@@ -1,0 +1,14 @@
+# Configure Compositions
+namespace:
+  # Enables Compositions
+  create: false
+  # General Information for nsi and kubeconfig creation
+  cluster:
+    name: ""
+    endpoint: ""
+    accountId: ""
+    region: "eu-central-1"
+  # Pattern to which namespace names must comply
+  namePattern: "^(cx-)"
+didShares:
+  create: false

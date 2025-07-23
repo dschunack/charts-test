@@ -1,0 +1,42 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutating-unwanted-annotation
+  annotations:
+    policies.kyverno.io/title: Remove unwanted Annotation
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/subject: Pod     
+spec:
+  rules:
+    - name: remove-unwanted-annotation
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+            namespaceSelector:
+              matchExpressions:
+              - key: enerkube-managed
+                operator: In
+                values:
+                - "true"
+        - resources:
+            kinds:
+            - Pod
+            namespaceSelector:
+              matchExpressions:
+              - key: "kubernetes.io/metadata.name"
+                operator: In
+                values:
+                - "default"
+      preconditions:
+        all:
+        - key: "{{`{{`}} request.operation {{`}}`}}"
+          operator: AnyIn
+          value:
+            - CREATE
+            - UPDATE
+      mutate:
+        patchesJson6902: |-
+          - path: "/metadata/annotations/karpenter.sh~1do-not-disrupt"
+            op: remove

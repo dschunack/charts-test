@@ -1,0 +1,7 @@
+# enerkube Chart specificc Values
+namespaceName: "enerkube-security"
+serviceAccountName: "trivy-operator"
+clusterName: ""
+accountId: ""
+oidcId: ""
+region: ""

@@ -1,0 +1,58 @@
+
+
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: "{{ .Values.clusterName }}-loki-role"
+spec:
+  forProvider:
+    assumeRolePolicy: |
+      {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Principal": {
+                      "Federated": "arn:aws:iam::{{ .Values.accountId }}:oidc-provider/oidc.eks.{{ .Values.region }}.amazonaws.com/id/{{ .Values.oidcId }}"
+                  },
+                  "Action": "sts:AssumeRoleWithWebIdentity",
+                  "Condition": {
+                      "StringEquals": {
+                          "oidc.eks.{{ .Values.region }}.amazonaws.com/id/{{ .Values.oidcId }}:sub": "system:serviceaccount:{{ .Values.namespaceName }}:{{ .Values.irsa.serviceAccountName }}"
+                      }
+                  }
+              }
+          ]
+      }
+    inlinePolicy:
+      - name: loki_policy
+        policy: |
+            {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                "Action": [
+                    "s3:ListBucket",
+                    "s3:PutObject",
+                    "s3:GetObject",
+                    "s3:DeleteObject"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                    "arn:aws:s3:::{{ include "bucket.name" . }}",
+                    "arn:aws:s3:::{{ include "bucket.name" . }}/*"
+                ]
+                },
+                {
+                "Action": [
+                    "iam:GetRole",
+                    "iam:PassRole"
+                ],
+                "Effect": "Allow",
+                
+
+                "Resource": "arn:aws:iam::{{ .Values.accountId }}:role/{{ .Values.clusterName }}-loki-role"
+                }
+            ]
+            }

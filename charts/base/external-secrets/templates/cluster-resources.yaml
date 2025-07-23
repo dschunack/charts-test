@@ -1,0 +1,123 @@
+{{- if or .Values.enableClusterwideParameterStore .Values.enableClusterwideSecretsManager }}
+{{- if .Values.enableClusterwideSecretsManager }}
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Policy
+metadata:
+  name: "eks-external-sm-secrets-{{ .Values.clusterName }}"
+  labels:
+    policy: "eks-external-sm-secrets-{{ .Values.clusterName }}"
+spec:
+  forProvider:
+    policy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": [
+              "secretsmanager:ListSecretVersionIds",
+              "secretsmanager:GetSecretValue",
+              "secretsmanager:GetResourcePolicy",
+              "secretsmanager:DescribeSecret"
+            ],
+            "Resource": "arn:aws:secretsmanager:{{ .Values.region }}:{{ .Values.accountId }}:secret:{{- if .Values.enableSecretsManagerPrefix }}/enerkube/{{ .Values.clusterName }}/{{- end }}*"
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: "{{ .Values.clusterName }}-eso-secrets"
+spec:
+  forProvider:
+    roleSelector:
+      matchLabels:
+        role: "{{ .Values.clusterName }}-eso"
+    policyArnSelector:
+      matchLabels:
+        policy: "eks-external-sm-secrets-{{ .Values.clusterName }}"
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterSecretStore
+metadata:
+  name: clustersecretstore-secrets-manager
+spec:
+  provider:
+    aws:
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: {{ .Values.serviceAccountController }}
+            namespace: {{ .Values.namespace }}
+      service: "SecretsManager"
+      region: {{ .Values.region }}
+      # {{- if .Values.enableSecretsManagerPrefix }}
+      # prefix: "/enerkube/{{ .Values.clusterName }}/"
+      # {{ else }}
+      # prefix: "/{{ .Values.clusterName }}/"
+      # {{- end }}
+---
+{{- end }}
+{{- if .Values.enableClusterwideParameterStore }}
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Policy
+metadata:
+  name: "eks-external-param-secrets-{{ .Values.clusterName }}"
+  labels:
+    policy: "eks-external-param-secrets-{{ .Values.clusterName }}"
+spec:
+  forProvider:
+    policy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": [
+              "ssm:GetParameter"
+            ],
+            "Resource": "arn:aws:ssm:{{ .Values.region }}:{{ .Values.accountId }}:parameter{{- if .Values.enableParameterStorePrefix }}/enerkube/{{ .Values.clusterName }}/{{- else }}/{{- end }}*"
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: "{{ .Values.clusterName }}-eso-params"
+spec:
+  forProvider:
+    roleSelector:
+      matchLabels:
+        role: "{{ .Values.clusterName }}-eso"
+    policyArnSelector:
+      matchLabels:
+        policy: "eks-external-param-secrets-{{ .Values.clusterName }}"
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterSecretStore
+metadata:
+  name: clustersecretstore-parameter-store
+spec:
+  provider:
+    aws:
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: {{ .Values.serviceAccountController }}
+            namespace: {{ .Values.namespace }}
+      service: "ParameterStore"
+      region: {{ .Values.region }}
+      # {{- if .Values.enableParameterStorePrefix }}
+      # prefix: "/enerkube/{{ .Values.clusterName }}/"
+      # {{ else }}
+      # prefix: "/{{ .Values.clusterName }}/"
+      # {{- end }}
+---
+{{- end }}
+{{- end }}

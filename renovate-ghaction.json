@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "labels": ["renovate"],
+    "repositories": [
+      "enercity-iac/enerkube-charts"
+  ],
+  "packageRules": [
+    {"matchUpdateTypes": ["major"], "addLabels": ["major"]},
+    {"matchUpdateTypes": ["minor"], "addLabels": ["minor"]},
+    {"matchUpdateTypes": ["patch"], "addLabels": ["patch"]},
+    {
+      "automergeType": "branch",
+      "matchUpdateTypes": ["patch", "digest", "pin"],
+      "matchPackageNames": ["*"],
+      "automerge": true,
+      "ignoreReviewers": true,
+      "ignoreTests": true
+    },
+    {
+      "matchDatasources": ["git-tags"],
+      "versioning": "semver"
+    }
+  ],
+  "flux": {
+    "fileMatch": ["(^|/).*.yaml$"]
+  },
+  "platformAutomerge": true,
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0
+}

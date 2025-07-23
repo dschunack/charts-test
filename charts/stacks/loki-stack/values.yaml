@@ -1,0 +1,341 @@
+loki-infrastructure:
+  # CMO Chart specificc Values
+  namespaceName: "cmo-observability"
+  clusterName: ""
+  accountId: ""
+  oidcId: ""
+  region: ""
+  irsa: 
+    serviceAccountName: "loki"
+  bucketName: ""
+  retentionDaysS3: 10
+
+loki:
+  loki:
+    commonConfig:
+      replication_factor: 1
+    storage:
+      type: 'filesystem'
+    extraArgs:
+      querier.query-timeout: "5m"
+      querier.engine.timeout: "5m"
+      server.http-read-timeout: "5m"
+      server.http-write-timeout: "5m"
+    networkPolicy:
+      enabled: false
+    rbac:
+      pspEnabled: false
+    nodeSelector:
+      kubernetes.io/os: linux
+    resources:
+      limits:
+        memory: 6Gi
+      requests:
+        cpu: "500m"
+        memory: 3Gi
+    livenessProbe:
+      initialDelaySeconds: 145
+    readinessProbe:
+      initialDelaySeconds: 145
+    podAnnotations:
+      karpenter.sh/do-not-disrupt: "true"
+    serviceMonitor:
+      enabled: true
+    persistence:
+      enabled: true
+      accessModes:
+      - ReadWriteOnce
+      size: "10Gi"
+    schemaConfig:
+      configs:
+      - from: 2020-09-17
+        store: boltdb-shipper
+        object_store: s3
+        schema: v11
+        index:
+          prefix: index_
+          period: 24h
+      - from: 2024-07-25
+        store: tsdb
+        object_store: s3
+        schema: v13
+        index:
+          prefix: index_
+          period: 24h
+    storageConfig:
+      boltdb_shipper:
+        active_index_directory: /var/loki/loki/index
+        cache_location: /var/loki/loki/index_cache
+        resync_interval: 5m
+        cache_ttl: 10m
+      tsdb_shipper:
+        active_index_directory: /var/loki/loki/index
+        cache_location: /var/loki/loki/index_cache
+        resync_interval: 5m
+        cache_ttl: 10m
+      aws:
+        s3: ""
+        s3forcepathstyle: true
+    tracing:
+      enabled: true
+    config: |
+      auth_enabled: false
+      server:
+        http_listen_port: 3100
+        grpc_server_max_recv_msg_size: 104857600
+        grpc_server_max_send_msg_size: 104857600
+      common:
+        path_prefix: /var/loki/loki
+        storage:
+          filesystem:
+            chunks_directory: /var/loki/loki/chunks
+            rules_directory: /var/loki/loki/rules
+        replication_factor: 1
+        ring:
+          kvstore:
+            store: inmemory
+
+      query_range:
+        parallelise_shardable_queries: false
+
+      querier:
+        max_concurrent: 4
+
+      table_manager:
+        retention_deletes_enabled: true
+        retention_period: "744h"
+
+      frontend:
+        max_outstanding_per_tenant: 4096
+        compress_responses: true
+      # distributor:
+      #   ring:
+      #     kvstore:
+      #       store: memberlist
+
+      # memberlist:
+      #   abort_if_cluster_join_fails: false
+
+      #   # Expose this port on all distributor, ingester
+      #   # and querier replicas.
+      #   bind_port: 7946
+
+      #   # You can use a headless k8s service for all distributor,
+      #   # ingester and querier components.
+      #   join_members:
+      #   - loki-gossip-ring.loki.svc.cluster.local:7946
+
+      #   max_join_backoff: 1m
+      #   max_join_retries: 10
+      #   min_join_backoff: 1s
+
+      ingester:
+        lifecycler:
+          ring:
+            kvstore:
+              store: memberlist
+            replication_factor: 1
+          final_sleep: 0s
+        chunk_idle_period: 5m
+        chunk_retain_period: 30s
+        chunk_target_size: 1572864
+        chunk_encoding: snappy
+        max_chunk_age: 168h
+        wal:
+          dir: "/tmp/wal"
+          flush_on_shutdown: true
+          checkpoint_duration: 5m
+      schema_config:
+        configs:
+        - from: 2020-09-17
+          store: boltdb-shipper
+          object_store: s3
+          schema: v11
+          index:
+            prefix: index_
+            period: 24h
+        - from: 2024-07-25
+          store: tsdb
+          object_store: s3
+          schema: v13
+          index:
+            prefix: index_
+            period: 24h
+      storage_config:
+        boltdb_shipper:
+          active_index_directory: /var/loki/loki/index
+          cache_location: /var/loki/loki/index_cache
+          resync_interval: 5m
+          cache_ttl: 10m
+        tsdb_shipper:
+          active_index_directory: /var/loki/loki/index
+          cache_location: /var/loki/loki/index_cache
+          resync_interval: 5m
+          cache_ttl: 10m
+        aws:
+          s3: {{ .Values.loki.storageConfig.aws.s3 }}
+          s3forcepathstyle: true
+      chunk_store_config:
+        chunk_cache_config:
+          default_validity: 5m
+      limits_config:
+        split_queries_by_interval: 0
+        reject_old_samples: false
+        reject_old_samples_max_age: "744h"
+        max_cache_freshness_per_query: 10m
+        ingestion_rate_mb: 196
+        ingestion_burst_size_mb: 256
+        max_streams_per_user: 0
+        max_global_streams_per_user: 0
+        max_label_names_per_series: 30
+        retention_period: "744h"
+        per_stream_rate_limit: 196MB
+        per_stream_rate_limit_burst: 256MB
+      compactor:
+        working_directory: /var/loki/loki/boltdb-shipper-compactor
+        retention_enabled: true
+        retention_delete_delay: 2h
+        retention_delete_worker_count: 150
+        delete_request_store: s3
+  singleBinary:
+    replicas: 1
+    resources:
+      limits:
+        memory: "6Gi"
+      requests:
+        cpu: "500m"
+        memory: "3Gi"
+    extraEnv:
+    # Keep a little bit lower than memory limits
+    - name: GOMEMLIMIT
+      value: 4GiB
+  serviceAccount:
+    name: loki
+    annotations:
+      eks.amazonaws.com/role-arn: ""
+  ingress:
+    enabled: true
+    # Default config of ingress comes with basic-auth. auth-secret must be generated with SecretsGenerator in cmo-gitops
+    annotations: 
+      nginx.ingress.kubernetes.io/auth-realm: Loki login
+      nginx.ingress.kubernetes.io/auth-secret: loki-basic-auth
+      nginx.ingress.kubernetes.io/auth-secret-type: auth-map
+      nginx.ingress.kubernetes.io/auth-type: basic
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    servicePaths: [ '/' ]
+    hosts: []
+  # # selfMonitoring contains the grafana agent installation, which is not neccesary as we normally use fluentbit from the logging operator
+  monitoring:
+    # Dashboards for monitoring Loki
+    dashboards:
+      # -- If enabled, create configmap with dashboards for monitoring Loki
+      enabled: true
+      # -- Alternative namespace to create dashboards ConfigMap in
+      namespace: null
+      # -- Additional annotations for the dashboards ConfigMap
+      annotations: {}
+      # -- Labels for the dashboards ConfigMap
+      labels:
+        grafana_dashboard: "1"
+    # -- DEPRECATED Recording rules for monitoring Loki, required for some dashboards
+    rules:
+      # -- If enabled, create PrometheusRule resource with Loki recording rules
+      enabled: true
+      # -- Include alerting rules
+      alerting: true
+      # -- Specify which individual alerts should be disabled
+      # -- Instead of turning off each alert one by one, set the .monitoring.rules.alerting value to false instead.
+      # -- If you disable all the alerts and keep .monitoring.rules.alerting set to true, the chart will fail to render.
+      disabled: {}
+      #  LokiRequestErrors: true
+      #  LokiRequestPanics: true
+      # -- Alternative namespace to create PrometheusRule resources in
+      namespace: null
+      # -- Additional annotations for the rules PrometheusRule resource
+      annotations: {}
+      # -- Additional labels for the rules PrometheusRule resource
+      labels: {}
+      # -- Additional labels for PrometheusRule alerts
+      additionalRuleLabels: {}
+      # -- Additional groups to add to the rules file
+      additionalGroups: []
+      # - name: additional-loki-rules
+      #   rules:
+      #     - record: job:loki_request_duration_seconds_bucket:sum_rate
+      #       expr: sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, job)
+      #     - record: job_route:loki_request_duration_seconds_bucket:sum_rate
+      #       expr: sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, job, route)
+      #     - record: node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate
+      #       expr: sum(rate(container_cpu_usage_seconds_total[1m])) by (node, namespace, pod, container)
+    #  -- DEPRECATED ServiceMonitor configuration
+    #  -- DEPRECATED ServiceMonitor configuration
+    serviceMonitor:
+      # -- If enabled, ServiceMonitor resources for Prometheus Operator are created
+      enabled: true
+      # -- Namespace selector for ServiceMonitor resources
+      namespaceSelector: {}
+      # -- ServiceMonitor annotations
+      annotations: {}
+      # -- Additional ServiceMonitor labels
+      labels: {}
+      # -- ServiceMonitor scrape interval
+      # Default is 15s because included recording rules use a 1m rate, and scrape interval needs to be at
+      # least 1/4 rate interval.
+      interval: 15s
+      # -- ServiceMonitor scrape timeout in Go duration format (e.g. 15s)
+      scrapeTimeout: null
+      # -- ServiceMonitor relabel configs to apply to samples before scraping
+      # https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#relabelconfig
+      relabelings: []
+      # -- ServiceMonitor metric relabel configs to apply to samples before ingestion
+      # https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#endpoint
+      metricRelabelings: []
+      # -- ServiceMonitor will use http by default, but you can pick https as well
+      scheme: http
+      # -- ServiceMonitor will use these tlsConfig settings to make the health check requests
+      tlsConfig: null
+      # -- If defined, will create a MetricsInstance for the Grafana Agent Operator.
+      metricsInstance:
+        # -- If enabled, MetricsInstance resources for Grafana Agent Operator are created
+        enabled: true
+        # -- MetricsInstance annotations
+        annotations: {}
+        # -- Additional MetricsInstance labels
+        labels: {}
+        # -- If defined a MetricsInstance will be created to remote write metrics.
+        remoteWrite: null
+      selfMonitoring:
+        enabled: false
+  test:
+    enabled: false
+  deploymentMode: SingleBinary
+  lokiCanary:
+    enabled: false
+  chunksCache:
+    enabled: false
+  resultsCache:
+    enabled: false
+  backend:
+    replicas: 0
+  read:
+    replicas: 0
+  write:
+    replicas: 0
+  ingester:
+    replicas: 0
+  querier:
+    replicas: 0
+  queryFrontend:
+    replicas: 0
+  queryScheduler:
+    replicas: 0
+  distributor:
+    replicas: 0
+  compactor:
+    replicas: 0
+  indexGateway:
+    replicas: 0
+  bloomCompactor:
+    replicas: 0
+  bloomGateway:
+    replicas: 0

@@ -1,0 +1,42 @@
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: "{{ .Values.clusterName }}-cloud-exporter-role"
+spec:
+  forProvider:
+    assumeRolePolicy: |
+      {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Principal": {
+                      "Federated": "arn:aws:iam::{{ .Values.accountId }}:oidc-provider/oidc.eks.{{ .Values.region }}.amazonaws.com/id/{{ .Values.oidcId }}"
+                  },
+                  "Action": "sts:AssumeRoleWithWebIdentity",
+                  "Condition": {
+                      "StringEquals": {
+                          "oidc.eks.{{ .Values.region }}.amazonaws.com/id/{{ .Values.oidcId }}:sub": "system:serviceaccount:{{ .Values.namespaceName }}:{{ .Values.cloudExporter.serviceAccountName }}"
+                      }
+                  }
+              }
+          ]
+      }
+    inlinePolicy:
+      - name: ingress_policy
+        policy: |
+            {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                "Action": [
+                    "ec2:DescribeSubnets"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                    "*"
+                ]
+                }
+            ]
+            }

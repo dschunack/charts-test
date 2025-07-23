@@ -1,0 +1,23 @@
+apiVersion: enercity.de/v1alpha1
+kind: NamespaceInfo
+metadata:
+  name: infos
+  namespace: {{ .Values.namespaceName }}
+spec:
+  account: {{ .Values.namespaceinfo.accountId }}
+{{- if .Values.namespaceinfo.enerkubeAlerting }}
+  alerting: 
+{{ toYaml .Values.namespaceinfo.enerkubeAlerting | indent 2 | default "None"}}
+{{- else }}
+  alerting: []
+{{- end }}
+  clustername: {{ .Values.clusterName }}
+  consolidationunit: "{{ .Values.namespaceinfo.enerkubeConsolidationUnit }}"
+  costcenter: {{ .Values.namespaceinfo.enerkubeCostcenter }}
+  costresp: {{ .Values.namespaceinfo.enerkubeCostresponsible }}
+  esign: "{{ .Values.namespaceinfo.enerkubeEsign }}"
+  namespace: {{ .Values.namespaceName }}
+  provider: {{ .Values.namespaceinfo.cloudProvider }}
+  region: {{ .Values.namespaceinfo.region }}
+  responsible: {{ .Values.namespaceinfo.enerkubeResponsible }}
+  wbselement: {{ .Values.namespaceinfo.wbsElement }}

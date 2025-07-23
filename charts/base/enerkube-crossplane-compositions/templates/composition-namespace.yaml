@@ -1,0 +1,272 @@
+{{- if .Values.namespace.create }}
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xenerkubenamespaces.enerkube.enercity.de
+spec:
+  group: enerkube.enercity.de
+  names:
+    categories:
+    - crossplane
+    kind: xEnerkubeNamespace
+    plural: xenerkubenamespaces
+  claimNames:
+    categories:
+    - crossplane
+    kind: EnerkubeNamespace
+    plural: enerkubenamespaces
+  connectionSecretKeys:
+    - kubeconfig-edit
+    - kubeconfig-read
+  versions:
+  - name: v1beta1
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        description: xEnerkubeNamespace is the Schema for the xEnerkubeNamespace API.
+        properties:
+          spec:
+            description: xEnerkubeNamespaceSpec defines the desired state of xEnerkubeNamespace.
+            properties:
+              parameters:
+                type: object
+                required:
+                  - name
+                  - responsible
+                  - alerting
+                properties:
+                  name:
+                    description: Name of created namespace, must adhere to specified pattern.
+                    type: string
+                    pattern: {{ .Values.namespace.namePattern }}
+                    x-kubernetes-validations:
+                    - message: spec.value is immutable once set
+                      rule: oldSelf == self
+                  responsible:
+                    type: string
+                    description: operational responsible for namespace, must be an valid internal mail address
+                    x-kubernetes-validations:
+                      - rule: "self.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$')"
+                        message: "responsible must be a valid e-mail address from enercity."
+                  management:
+                    description: Management Namespaces are able to create enerkubeNamespaces themselves! Be careful and use at your own risk!
+                    type: boolean
+                  alerting:
+                    type: array
+                    description: list of alerting contacts for namespace, must be an valid internal mail address
+                    items:
+                      type: string
+                  permissions:
+                    type: object
+                    description: rbac read and edit permissions for serviceAccounts of different namespaces
+                    properties:
+                      view:
+                        description: rbac read permissions for serviceAccounts of different namespaces
+                        type: array
+                        items: 
+                          type: object
+                          required:
+                            - namespace
+                            - serviceAccount
+                          properties:
+                            namespace:
+                              type: string
+                            serviceAccount:
+                              type: string
+                      edit:
+                        description: rbac edit permissions for serviceAccounts of different namespaces
+                        type: array
+                        items: 
+                          type: object
+                          required:
+                            - namespace
+                            - serviceAccount
+                          properties:
+                            namespace:
+                              type: string
+                            serviceAccount:
+                              type: string
+                  cost:
+                    description: cost properties, only for second layer of cost charging
+                    properties:
+                      costcenter:
+                        type: string
+                      consolidationUnit:
+                        type: string
+                      esign:
+                        type: string
+                      costcenterResponsible:
+                        type: string
+                        x-kubernetes-validations:
+                        - rule: "self.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$')"
+                          message: "responsible must be a valid e-mail address from enercity."
+                      wbselement:
+                        type: string
+                    type: object
+            type: object
+          status:
+            description: XEnerkubeNamespaceStatus defines the observed state of XEnerkubeNamespace.
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xenerkubenamespace.enerkube.enercity.de
+spec:
+  writeConnectionSecretsToNamespace: enerkube-namespaces
+  compositeTypeRef:
+    apiVersion: enerkube.enercity.de/v1beta1
+    kind: xEnerkubeNamespace
+  mode: Pipeline
+  pipeline:
+  - step: patch-and-transform
+    functionRef:
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+      - name: namespace-chart
+        base:
+          apiVersion: kubernetes.crossplane.io/v1alpha2
+          kind: Object
+          spec:
+            connectionDetails:
+            - apiVersion: v1
+              fieldPath: data.kubeconfig
+              kind: Secret
+              name: PATCH
+              namespace: PATCH
+              toConnectionSecretKey: kubeconfig-edit
+            - apiVersion: v1
+              fieldPath: data.kubeconfig
+              kind: Secret
+              name: PATCH
+              namespace: PATCH
+              toConnectionSecretKey: kubeconfig-read
+            forProvider:
+              manifest:
+                apiVersion: helm.toolkit.fluxcd.io/v2
+                kind: HelmRelease
+                metadata:
+                  name: PATCH
+                  namespace: enerkube-namespaces
+                spec:
+                  chart:
+                    spec:
+                      chart: enerkube-namespace
+                      sourceRef:
+                        kind: HelmRepository
+                        name: enerkube-charts
+                        namespace: enerkube-namespaces
+                      version: 1.3.1
+                  interval: 10m
+                  releaseName: PATCH
+                  serviceAccountName: flux-applier
+                  targetNamespace: enerkube-namespaces
+                  values:
+                    clusterEndpoint: {{ .Values.namespace.cluster.endpoint }}
+                    clusterName: {{ .Values.namespace.cluster.name }}
+                    namespaceName: PATCH
+                    managementNamespace: false
+                    namespaceinfo: 
+                      accountId: {{ .Values.namespace.cluster.accountId }}
+                      enerkubeAlerting: "None"
+                      enerkubeConsolidationUnit: "None"
+                      enerkubeCostcenter: "None"
+                      enerkubeCostresponsible: "None"
+                      enerkubeEsign: "None"
+                      cloudProvider: "AWS"
+                      region: {{ .Values.namespace.cluster.region }}
+                      enerkubeResponsible: "None"
+                      wbsElement: "None"
+            providerConfigRef:
+              name: provider-kubernetes
+            writeConnectionSecretToRef:
+              name: PATCH
+              namespace: enerkube-namespaces
+        connectionDetails:
+        - fromConnectionSecretKey: kubeconfig-edit
+          name: kubeconfig-edit
+          type: FromConnectionSecretKey
+        - fromConnectionSecretKey: kubeconfig-read
+          name: kubeconfig-read
+          type: FromConnectionSecretKey
+        patches:
+        - fromFieldPath: spec.parameters.name
+          toFieldPath: spec.forProvider.manifest.metadata.name
+        - fromFieldPath: spec.parameters.permissions
+          toFieldPath: spec.forProvider.manifest.spec.values.permissions
+        - fromFieldPath: spec.parameters.name
+          toFieldPath: spec.forProvider.manifest.spec.releaseName
+        - fromFieldPath: spec.parameters.name
+          toFieldPath: spec.forProvider.manifest.spec.values.namespaceName
+        - fromFieldPath: spec.parameters.name
+          toFieldPath: spec.connectionDetails[0].namespace
+        - fromFieldPath: spec.parameters.name
+          toFieldPath: spec.connectionDetails[1].namespace
+        - fromFieldPath: spec.parameters.name
+          toFieldPath: spec.connectionDetails[0].name
+          transforms:
+          - string:
+              fmt: kubeconfig-%s-default-login-serviceaccount
+              type: Format
+            type: string
+          type: FromCompositeFieldPath
+        - fromFieldPath: spec.parameters.name
+          toFieldPath: spec.writeConnectionSecretToRef.name
+          transforms:
+          - string:
+              fmt: kubeconfig-%s
+              type: Format
+            type: string
+          type: FromCompositeFieldPath
+        - fromFieldPath: spec.parameters.name
+          toFieldPath: spec.connectionDetails[1].name
+          transforms:
+          - string:
+              fmt: kubeconfig-%s-read-only
+              type: Format
+            type: string
+          type: FromCompositeFieldPath
+        - fromFieldPath: spec.parameters.responsible
+          toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.enerkubeResponsible
+        - fromFieldPath: spec.parameters.management
+          toFieldPath: spec.forProvider.manifest.spec.values.managementNamespace
+        - fromFieldPath: spec.parameters.cost.costcenter
+          toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.enerkubeCostcenter
+          transforms:
+          - string:
+              fmt: '''%s'''
+              type: Format
+            type: string
+          type: FromCompositeFieldPath
+        - fromFieldPath: spec.parameters.alerting
+          toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.enerkubeAlerting
+        - fromFieldPath: spec.parameters.cost.consolidationUnit
+          toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.enerkubeConsolidationUnit
+          transforms:
+          - string:
+              fmt: '''%s'''
+              type: Format
+            type: string
+          type: FromCompositeFieldPath
+        - fromFieldPath: spec.parameters.cost.esign
+          toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.enerkubeEsign
+          transforms:
+          - string:
+              fmt: '''%s'''
+              type: Format
+            type: string
+          type: FromCompositeFieldPath
+        - fromFieldPath: spec.parameters.cost.costcenterResponsible
+          toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.enerkubeCostresponsible
+        - fromFieldPath: spec.parameters.cost.wbselement
+          toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.wbsElement
+  publishConnectionDetailsWithStoreConfigRef:
+    name: default
+{{- end }}

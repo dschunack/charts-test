@@ -1,0 +1,39 @@
+{{- if .Values.namespace.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: enerkube-aggregate-composition-namespace
+  labels:
+    rbac.enerkube/aggregate-to-enerkube-provider-kubernetes: "true"
+rules:
+- apiGroups:
+  - helm.toolkit.fluxcd.io
+  resources:
+  - helmreleases
+  verbs:
+  - create
+  - list
+  - update
+  - patch
+  - delete
+  - get
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: enerkube:composition-namespace:edit
+rules:
+- apiGroups:
+  - "enerkube.conti.de"
+  resources:
+  - enerkubenamespaces
+  verbs:
+  - create
+  - list
+  - update
+  - patch
+  - delete
+  - get
+  - watch
+{{- end }}

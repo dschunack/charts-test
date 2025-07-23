@@ -1,0 +1,99 @@
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: "{{ .Values.clusterName }}-grafana-cloudwatch-role"
+spec:
+  forProvider:
+    assumeRolePolicy: |
+      {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Principal": {
+                      "Federated": "arn:aws:iam::{{ .Values.accountId }}:oidc-provider/oidc.eks.{{ .Values.region }}.amazonaws.com/id/{{ .Values.oidcId }}"
+                  },
+                  "Action": "sts:AssumeRoleWithWebIdentity",
+                  "Condition": {
+                      "StringEquals": {
+                          "oidc.eks.{{ .Values.region }}.amazonaws.com/id/{{ .Values.oidcId }}:sub": "system:serviceaccount:{{ .Values.namespaceName }}:{{ .Values.grafana.serviceAccountName }}"
+                      }
+                  }
+              }
+          ]
+      }
+    inlinePolicy:
+      - name: ingress_policy
+        policy: |
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Sid": "AllowReadingMetricsFromCloudWatch",
+                        "Effect": "Allow",
+                        "Action": [
+                        "cloudwatch:DescribeAlarmsForMetric",
+                        "cloudwatch:DescribeAlarmHistory",
+                        "cloudwatch:DescribeAlarms",
+                        "cloudwatch:ListMetrics",
+                        "cloudwatch:GetMetricStatistics",
+                        "cloudwatch:GetMetricData"
+                        ],
+                        "Resource": "*"
+                    },
+                    {
+                    "Sid": "AllowReadingMetricsFromRedshift",
+                    "Effect": "Allow",
+                    "Action": [
+                        "redshift-data:ListTables",
+                        "redshift-data:DescribeTable",
+                        "redshift-data:GetStatementResult",
+                        "redshift-data:DescribeStatement",
+                        "redshift-data:ListStatements",
+                        "redshift-data:ListSchemas",
+                        "redshift-data:ExecuteStatement",
+                        "redshift-data:CancelStatement",
+                        "redshift:GetClusterCredentials",
+                        "redshift:DescribeClusters"
+                    ],
+                    "Resource": "*"
+                    },
+                    {
+                    "Sid": "AllowReadingLogsFromCloudWatch",
+                    "Effect": "Allow",
+                    "Action": [
+                        "logs:DescribeLogGroups",
+                        "logs:GetLogGroupFields",
+                        "logs:StartQuery",
+                        "logs:StopQuery",
+                        "logs:GetQueryResults",
+                        "logs:GetLogEvents"
+                    ],
+                    "Resource": "*"
+                    },
+                    {
+                        "Sid": "AllowReadingTagsInstancesRegionsFromEC2",
+                        "Effect": "Allow",
+                        "Action": [
+                            "ec2:DescribeTags",
+                            "ec2:DescribeInstances",
+                            "ec2:DescribeRegions",
+                            "ec2:getAwsConfig"
+                        ],
+                        "Resource": "*"
+                    },
+                    {
+                        "Sid": "AllowReadingResourcesForTags",
+                        "Effect" : "Allow",
+                        "Action" : "tag:GetResources",
+                        "Resource" : "*"
+                    },
+                    {
+                        "Sid": "AllowPublishToSNS",
+                        "Effect" : "Allow",
+                        "Action" : "sns:Publish",
+                        "Resource" : "*"
+                    }
+                ]
+            }

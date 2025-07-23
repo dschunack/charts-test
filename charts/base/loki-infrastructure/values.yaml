@@ -1,0 +1,11 @@
+# enerkube Chart specificc Values
+namespaceName: "enerkube-observability"
+clusterName: ""
+accountId: ""
+oidcId: ""
+region: ""
+bucketName: ""
+retentionDaysS3: 10
+
+irsa: 
+  serviceAccountName: ""

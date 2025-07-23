@@ -1,0 +1,49 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validating-kyverno-configmap-access
+  annotations:
+    policies.kyverno.io/title: Restrict access on Kyverno Configmaps
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/subject: ConfigMap
+    policies.kyverno.io/description: >-
+      This Policy blocked the modification of our standard ConfigMap excluding the 
+      resources created by ClusterRole cluster-admin OR by the Group system:masters.
+spec:
+  validationFailureAction: Enforce
+  failurePolicy: Fail
+  background: false
+  rules:
+    - name: validating-kyverno-configmap-access
+      match:
+        any:
+        - resources:
+            kinds:
+            - ConfigMap
+      exclude:
+        any:
+        - clusterRoles:
+          - cluster-admin
+        - subjects:
+          - kind: Group
+            name: system:masters
+      preconditions:
+        all:
+        - key: "{{`{{ request.operation }}`}}"
+          operator: AnyIn
+          value: ["CREATE", "UPDATE", "DELETE", "CONNECT"]
+      validate:
+        message: >-
+          User: "{{`{{ request.userInfo.username }} and Groups: {{ request.userInfo.groups }} are not allowed to modify {{ request.object.metadata.name }}.`}}"
+        deny:
+          conditions:
+            any:
+            - key: 
+                - "enerkube-kyverno-exclude-run-as-non-root"
+                - "enerkube-kyverno-exclude-host-ports"
+                - "enerkube-kyverno-exclude-host-path"
+                - "enerkube-kyverno-exclude-host-process"
+                - "enerkube-kyverno-exclude-host-namespaces"
+                - "enerkube-kyverno-exclude-privileged"
+              operator: AnyIn
+              value: "{{`{{ request.object.metadata.name }}`}}"

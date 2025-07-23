@@ -1,0 +1,37 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-priority-classes
+  annotations:
+    policies.kyverno.io/title: Enforce non-escalating priority classes
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/subject: Pods
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/description: >-
+      Users can set priority classes but are restricted to high-priority-pods, so that system pods can't be evicted by user workload
+spec:
+  validationFailureAction: Audit
+  rules:
+  - name: enforce-specific-priority-classes
+    match:
+      resources:
+        kinds:
+        - Pod
+        namespaceSelector:
+          matchExpressions:
+          - key: enerkube-managed
+            operator: In
+            values:
+            - "true"
+    preconditions:
+      all:
+      - key: "{{`{{`}} request.operation {{`}}`}}"
+        operator: AnyIn
+        value:
+        - CREATE
+        - UPDATE
+    validate:
+      message: "Only the high-priority-pods priority class are allowed for Pods."
+      pattern:
+        =(spec.priorityClassName?): ^(high-priority-pods)?$
+        # The '?' after 'spec.priorityClassName' makes it optional. Adjust the regular expression pattern to match the desired priority class names.

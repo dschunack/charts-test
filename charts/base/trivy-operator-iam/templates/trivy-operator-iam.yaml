@@ -1,0 +1,38 @@
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: {{ $.Values.clusterName }}-trivy-operator
+  labels:
+    role: {{ $.Values.clusterName }}-trivy-operator
+spec:
+  forProvider:
+    assumeRolePolicy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": {{ printf "\"arn:aws:iam::%d:oidc-provider/oidc.eks.%s.amazonaws.com/id/%s\"" (int $.Values.accountId) $.Values.region $.Values.oidcId }}
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                {{ printf "\"oidc.eks.%s.amazonaws.com/id/%s:sub\"" $.Values.region $.Values.oidcId }}: "system:serviceaccount:{{ $.Values.namespaceName }}:{{ $.Values.serviceAccountName }}"
+              }
+            }
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: {{ $.Values.clusterName }}-trivy-operator
+spec:
+  forProvider:
+    roleSelector:
+      matchLabels:
+        role: {{ $.Values.clusterName }}-trivy-operator
+    policyArn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"

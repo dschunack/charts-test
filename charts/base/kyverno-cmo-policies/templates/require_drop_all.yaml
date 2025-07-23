@@ -1,0 +1,65 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validating-require-drop-all
+  annotations:
+    policies.kyverno.io/title: Drop All Capabilities
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/subject: Pod
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/description: >-
+      Capabilities permit privileged actions without giving full root access. All
+      capabilities should be dropped from a Pod, with only those required added back.
+      This policy ensures that all containers explicitly specify the `drop: ["ALL"]`
+      ability.      
+spec:
+  validationFailureAction: {{ .Values.policies.validate.RequireDropAll }}
+  failurePolicy: Fail
+  background: true
+  rules:
+    - name: require-drop-all
+      exclude:
+        any:
+        - resources:
+            kinds:
+            - Pod
+            namespaceSelector:
+              matchExpressions:
+              - key: enerkube-kyverno-drop-all
+                operator: In
+                values:
+                - "true"
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+            namespaceSelector:
+              matchExpressions:
+              - key: enerkube-managed
+                operator: In
+                values:
+                - "true"
+        - resources:
+            kinds:
+            - Pod
+            namespaces:
+              - "default"
+      preconditions:
+        all:
+        - key: "{{`{{  request.operation }}`}}"
+          operator: Equals
+          value: CREATE
+      validate:
+        message: >-
+          Containers must drop `ALL` capabilities.
+        foreach:
+          - list: request.object.spec.[ephemeralContainers, initContainers, containers][]
+            deny:
+              conditions:
+                all:
+                - key: ALL
+                  operator: AnyNotIn
+                  value: "{{`{{  element.securityContext.capabilities.drop || '' }}`}}"

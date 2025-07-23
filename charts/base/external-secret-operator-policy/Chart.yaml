@@ -1,0 +1,5 @@
+apiVersion: v2
+name: external-secret-operator-policy
+version: 0.4.2
+description: Helm chart for ESO kyverno policy exception, which allows the ESO operator to be deployed successfully
+icon: https://raw.githubusercontent.com/external-secrets/external-secrets/main/assets/eso-logo-large.png

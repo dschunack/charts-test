@@ -1,0 +1,30 @@
+{{- if .Values.namespaceinfo.enerkubeAlerting }}
+
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: enerkube-alert-config
+  namespace: {{ .Values.namespaceName }}
+  labels:
+    alertmanagerConfig: enerkube
+spec:
+  route:
+    groupBy: ['job']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    receiver: 'enerkube-alert-config'
+  receivers:
+{{- range .Values.namespaceinfo.enerkubeAlerting }}
+  - name: 'enerkube-alert-config'
+    emailConfigs:
+    - sendResolved: false
+      to: {{ . }}
+      headers:
+      - key: Subject
+        value: '{{ "{{" }} template "email.default.subject" . {{ "}}" }}'
+      html: '{{ "{{" }}template "email.default.html" . {{ "}}" }}'
+      tlsConfig:
+        insecureSkipVerify: true
+{{- end }}
+{{- end }}

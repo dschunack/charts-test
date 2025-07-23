@@ -1,0 +1,9 @@
+# enerkube Chart specificc Values
+namespaceName: "enerkube-system"
+serviceAccountName: "karpenter"
+clusterName: ""
+accountId: ""
+region: ""
+oidcId: ""
+workerRoleArn: ""
+workerWinRoleArn: ""

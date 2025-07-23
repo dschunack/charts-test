@@ -1,0 +1,162 @@
+{{- if .Values.didShares.create }}
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xdidshare.enerkube.conti.de
+spec:
+  group: enerkube.conti.de
+  names:
+    categories:
+    - crossplane
+    kind: xDidShare
+    plural: xdidshare
+  claimNames:
+    categories:
+    - crossplane
+    kind: DidShare
+    plural: didshares
+  versions:
+  - name: v1beta1
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        required:
+        - spec
+        type: object
+        description: xDidShare is the Schema for the xDidShare API.
+        properties:
+          spec:
+            type: object
+            description: xDidShareSpec defines the desired state of xDidShare.
+            properties:
+              parameters:
+                type: object
+                required:
+                  - nodeStageSecretName
+                  - source
+                properties:
+                  nodeStageSecretName:
+                    type: string
+                    description: Name of Secret which references the cifs credentials
+                  source:
+                    type: string
+                    description: Server Path to did share, e.g. //server.cw01.contiwan.com/didr1234
+                  mountOptions:
+                    type: array
+                    description: List of mount options, defaults to "[file_mode=0777,gid=1001,uid=01001,vers=3.0]"
+                    items:
+                      type: string
+          status:
+            description: xDidShareStatus defines the observed state of xDidShare.
+            type: object
+    served: true
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xdidshare.enerkube.conti.de
+spec:
+  compositeTypeRef:
+    apiVersion: enerkube.conti.de/v1beta1
+    kind: xDidShare
+  mode: Pipeline
+  pipeline:
+  - step: patch-and-transform
+    functionRef:
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+        - name: did-pv
+          base:
+            apiVersion: kubernetes.crossplane.io/v1alpha2
+            kind: Object
+            spec:
+              forProvider:
+                manifest:
+                  apiVersion: v1
+                  kind: PersistentVolume
+                  metadata:
+                    name: REQUIRED_PATCH
+                  spec:
+                    accessModes:
+                    - ReadWriteMany
+                    capacity:
+                      storage: 100Gi
+                    csi:
+                      driver: smb.csi.k8s.io
+                      nodeStageSecretRef:
+                        name: REQUIRED_PATCH
+                        namespace: REQUIRED_PATCH
+                      volumeAttributes:
+                        source: REQUIRED_PATCH
+                      volumeHandle: REQUIRED_PATCH
+                    mountOptions:
+                    - file_mode=0700
+                    - gid=1001
+                    - uid=1001
+                    - dir_mode=0777
+                    - vers=3.0
+                    persistentVolumeReclaimPolicy: Retain
+                    volumeMode: Filesystem
+              providerConfigRef:
+                name: provider-kubernetes
+          patches:
+            - type: CombineFromComposite
+              combine:
+                variables:
+                  - fromFieldPath: metadata.labels['crossplane.io/claim-namespace']
+                  - fromFieldPath: metadata.labels['crossplane.io/claim-name']
+                strategy: string
+                string:
+                  fmt: "did-share-%s-%s"
+              toFieldPath: spec.forProvider.manifest.metadata.name
+            - fromFieldPath: spec.parameters.nodeStageSecretName
+              toFieldPath: spec.forProvider.manifest.spec.csi.nodeStageSecretRef.name
+            - fromFieldPath: metadata.labels['crossplane.io/claim-namespace']
+              toFieldPath: spec.forProvider.manifest.spec.csi.nodeStageSecretRef.namespace
+            - fromFieldPath: spec.parameters.source
+              toFieldPath: spec.forProvider.manifest.spec.csi.volumeAttributes.source
+            - fromFieldPath: metadata.labels['crossplane.io/claim-name']
+              toFieldPath: spec.forProvider.manifest.spec.csi.volumeHandle
+            - fromFieldPath: spec.parameters.mountOptions
+              toFieldPath: spec.forProvider.manifest.spec.mountOptions
+        - name: smb-pvc
+          base:
+            apiVersion: kubernetes.crossplane.io/v1alpha2
+            kind: Object
+            spec:
+              forProvider:
+                manifest:
+                  apiVersion: v1
+                  kind: PersistentVolumeClaim
+                  metadata:
+                    name: REQUIRED_PATCH
+                    namespace: REQUIRED_PATCH
+                  spec:
+                    accessModes:
+                      - ReadWriteMany
+                    volumeMode: Filesystem
+                    volumeName: REQUIRED_PATCH
+                    storageClassName: ""
+                    resources:
+                      requests:
+                        storage: 100Gi
+              providerConfigRef:
+                name: provider-kubernetes
+          patches:
+            - fromFieldPath: metadata.labels['crossplane.io/claim-name']
+              toFieldPath: spec.forProvider.manifest.metadata.name
+            - fromFieldPath: metadata.labels['crossplane.io/claim-namespace']
+              toFieldPath: spec.forProvider.manifest.metadata.namespace
+            - type: CombineFromComposite
+              combine:
+                variables:
+                  - fromFieldPath: metadata.labels['crossplane.io/claim-namespace']
+                  - fromFieldPath: metadata.labels['crossplane.io/claim-name']
+                strategy: string
+                string:
+                  fmt: "did-share-%s-%s"
+              toFieldPath: spec.forProvider.manifest.spec.volumeName
+{{- end }}
