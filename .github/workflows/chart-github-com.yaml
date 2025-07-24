@@ -2,12 +2,12 @@ name: Chart github.com
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
-      - main
-    paths:
-      - 'charts/**'
+  # push:
+  #   branches:
+  #     - master
+  #     - main
+  #   paths:
+  #     - 'charts/**'
 jobs:
   release_chart:
     runs-on: gha-enterprise-basic

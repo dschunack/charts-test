@@ -1,4 +1,4 @@
-name: Sync Repos
+name: Sync Repos to github.com
 
 on:
   push:
@@ -26,4 +26,4 @@ jobs:
           git push github --force
         env:
           ORG_NAME_GITHUB: dschunack
-          REPO_NAME_GITHUB: chart-test
+          REPO_NAME_GITHUB: charts-test
