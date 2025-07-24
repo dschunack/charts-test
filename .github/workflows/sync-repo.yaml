@@ -1,0 +1,29 @@
+name: Sync Repos
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: gha-enterprise-basic
+    # container:
+    #   image: alpine/git:latest
+    #   options: --user 1001
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+
+      - name: Push to destination repository
+        run: |
+          git remote add github https://${{ env.REPO_NAME_GITHUB }}:${{ secrets.GH_COM_TOKEN }}@github.com/${{ env.ORG_NAME_GITHUB }}/${{ env.REPO_NAME_GITHUB }}
+          git push github --force
+        env:
+          ORG_NAME_GITHUB: dschunack
+          REPO_NAME_GITHUB: chart-test
