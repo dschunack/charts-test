@@ -5,7 +5,7 @@ kind: Namespace
 metadata:
   labels:
     clustername: {{ .Values.clusterName }}
-    enerkube-managed: {{ .Values.enerkubeManagedNamespace | quote }}
+    enerkube-managed: {{ .Values.ManagedNamespace | quote }}
     department: {{ $namespaceName }}
     team: {{ $namespaceName }}
 {{- if .Values.AdditionalLabels }}

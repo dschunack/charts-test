@@ -13,7 +13,7 @@ kubeconfig:
   # Namespace where kubeconfig secrets are created -> If empty defaults to user namespace!
   namespace: ""
   # Namespace where the kubeconfig creation job is run
-  jobNamespace: enerkube-namespaces
+  jobNamespace: enerkube-custom
 
 # Endpoint for kubeconfig creation, e.g. 
 aksApi: ""
@@ -21,7 +21,7 @@ aksApi: ""
 managementNamespace: false
 
 # Enables default kyverno policies
-enerkubeManagedNamespace: "true"
+ManagedNamespace: "true"
 
 AdditionalLabels: {}
   # key1: value1
