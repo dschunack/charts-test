@@ -47,6 +47,15 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/enerkube-crossplane-compositions-1.4.2/enerkube-crossplane-compositions-1.4.2.tgz
     version: 1.4.2
+  - apiVersion: v2
+    created: "2025-07-24T12:02:27.642236162Z"
+    description: A Helm chart for Kubernetes
+    digest: d1781bccfdaa7bdbf75bf7359eacca0f721e163af185b909b1b585d9484b1e56
+    name: enerkube-crossplane-compositions
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-crossplane-compositions-0.1.0/enerkube-crossplane-compositions-0.1.0.tgz
+    version: 0.1.0
   enerkube-crossplane-providerconfig:
   - apiVersion: v2
     created: "2025-07-24T09:56:48.396523075Z"
@@ -96,6 +105,15 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/enerkube-namespace-1.3.1/enerkube-namespace-1.3.1.tgz
     version: 1.3.1
+  - apiVersion: v2
+    created: "2025-07-24T12:02:27.799327146Z"
+    description: A Helm chart for creating enerkube namespaces
+    digest: 97f665938ae458ecb21324aa14484e48c12136cfcdb34937f11003430ee041c8
+    name: enerkube-namespace
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-namespace-0.1.0/enerkube-namespace-0.1.0.tgz
+    version: 0.1.0
   external-secret-operator-policy:
   - apiVersion: v2
     created: "2025-07-23T08:03:05.919310435Z"
@@ -373,4 +391,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-24T09:57:43.015762244Z"
+generated: "2025-07-24T12:02:27.799364915Z"
