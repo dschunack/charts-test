@@ -1,18 +1,18 @@
-apiVersion: enercity.de/v1alpha1
-kind: NamespaceInfo
-metadata:
-  name: infos
-  namespace: {{ .Values.namespaceName }}
-spec:
-  subscriptionid: {{ .Values.namespaceinfo.subscriptionid }}
-{{- if .Values.namespaceinfo.Alerting }}
-  alerting: 
-{{ toYaml .Values.namespaceinfo.Alerting | indent 2 | default "None"}}
-{{- else }}
-  alerting: []
-{{- end }}
-  clustername: {{ .Values.clusterName }}
-  namespace: {{ .Values.namespaceName }}
-  provider: {{ .Values.namespaceinfo.cloudProvider }}
-  location: {{ .Values.namespaceinfo.location }}
-  responsible: {{ .Values.namespaceinfo.Responsible }}
+# apiVersion: enercity.de/v1alpha1
+# kind: NamespaceInfo
+# metadata:
+#   name: infos
+#   namespace: {{ .Values.namespaceName }}
+# spec:
+#   subscriptionid: {{ .Values.namespaceinfo.subscriptionid }}
+# {{- if .Values.namespaceinfo.Alerting }}
+#   alerting: 
+# {{ toYaml .Values.namespaceinfo.Alerting | indent 2 | default "None"}}
+# {{- else }}
+#   alerting: []
+# {{- end }}
+#   clustername: {{ .Values.clusterName }}
+#   namespace: {{ .Values.namespaceName }}
+#   provider: {{ .Values.namespaceinfo.cloudProvider }}
+#   location: {{ .Values.namespaceinfo.location }}
+#   responsible: {{ .Values.namespaceinfo.Responsible }}
