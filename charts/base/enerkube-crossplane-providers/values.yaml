@@ -1,0 +1,7 @@
+clientId: ""
+providers:
+  TBD: true
+
+# Default values for enerkube-crossplane.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
