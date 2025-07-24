@@ -40,7 +40,7 @@ jobs:
         uses: helm/chart-releaser-action@v1.7.0
         with:
           charts_dir: charts/base
-          config: cr.yaml
+          config: cr-github-com.yaml
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
@@ -52,6 +52,6 @@ jobs:
         uses: helm/chart-releaser-action@v1.7.0
         with:
           charts_dir: charts/stacks
-          config: cr.yaml
+          config: cr-github-com.yaml
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

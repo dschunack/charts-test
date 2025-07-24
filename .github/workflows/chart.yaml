@@ -1,10 +1,9 @@
-name: Chart
+name: Chart GHE
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - master
       - main
     paths:
       - 'charts/**'
