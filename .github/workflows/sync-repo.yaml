@@ -23,7 +23,7 @@ jobs:
       - name: Push to destination repository
         run: |
           git remote add github https://${{ env.REPO_NAME_GITHUB }}:${{ secrets.GH_COM_TOKEN }}@github.com/${{ env.ORG_NAME_GITHUB }}/${{ env.REPO_NAME_GITHUB }}
-          git push github master --force
+          git push github main:master --force
         env:
           ORG_NAME_GITHUB: dschunack
           REPO_NAME_GITHUB: charts-test
