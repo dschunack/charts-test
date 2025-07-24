@@ -1,4 +1,4 @@
-{{- if .Values.namespaceinfo.enerkubeAlerting }}
+{{- if .Values.namespaceinfo.Alerting }}
 
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
@@ -15,7 +15,7 @@ spec:
     repeatInterval: 12h
     receiver: 'enerkube-alert-config'
   receivers:
-{{- range .Values.namespaceinfo.enerkubeAlerting }}
+{{- range .Values.namespaceinfo.Alerting }}
   - name: 'enerkube-alert-config'
     emailConfigs:
     - sendResolved: false

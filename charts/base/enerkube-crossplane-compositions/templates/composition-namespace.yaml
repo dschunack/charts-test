@@ -86,23 +86,6 @@ spec:
                               type: string
                             serviceAccount:
                               type: string
-                  cost:
-                    description: cost properties, only for second layer of cost charging
-                    properties:
-                      costcenter:
-                        type: string
-                      consolidationUnit:
-                        type: string
-                      esign:
-                        type: string
-                      costcenterResponsible:
-                        type: string
-                        x-kubernetes-validations:
-                        - rule: "self.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$')"
-                          message: "responsible must be a valid e-mail address from enercity."
-                      wbselement:
-                        type: string
-                    type: object
             type: object
           status:
             description: XEnerkubeNamespaceStatus defines the observed state of XEnerkubeNamespace.
@@ -117,7 +100,7 @@ kind: Composition
 metadata:
   name: xenerkubenamespace.enerkube.enercity.de
 spec:
-  writeConnectionSecretsToNamespace: enerkube-namespaces
+  writeConnectionSecretsToNamespace: enerkube-custom
   compositeTypeRef:
     apiVersion: enerkube.enercity.de/v1beta1
     kind: xEnerkubeNamespace
@@ -154,7 +137,7 @@ spec:
                 kind: HelmRelease
                 metadata:
                   name: PATCH
-                  namespace: enerkube-namespaces
+                  namespace: enerkube-custom
                 spec:
                   chart:
                     spec:
@@ -162,33 +145,28 @@ spec:
                       sourceRef:
                         kind: HelmRepository
                         name: enerkube-charts
-                        namespace: enerkube-namespaces
-                      version: 1.3.1
+                        namespace: enerkube-custom
+                      version: 0.1.0
                   interval: 10m
                   releaseName: PATCH
                   serviceAccountName: flux-applier
-                  targetNamespace: enerkube-namespaces
+                  targetNamespace: enerkube-custom
                   values:
-                    clusterEndpoint: {{ .Values.namespace.cluster.endpoint }}
+                    clusterAPI: {{ .Values.namespace.cluster.aksapi }}
                     clusterName: {{ .Values.namespace.cluster.name }}
                     namespaceName: PATCH
                     managementNamespace: false
                     namespaceinfo: 
-                      accountId: {{ .Values.namespace.cluster.accountId }}
+                      subscriptionId: {{ .Values.namespace.cluster.subscriptionid }}
                       enerkubeAlerting: "None"
-                      enerkubeConsolidationUnit: "None"
-                      enerkubeCostcenter: "None"
-                      enerkubeCostresponsible: "None"
-                      enerkubeEsign: "None"
-                      cloudProvider: "AWS"
-                      region: {{ .Values.namespace.cluster.region }}
-                      enerkubeResponsible: "None"
-                      wbsElement: "None"
+                      cloudProvider: "Azure"
+                      region: {{ .Values.namespace.cluster.location }}
+                      enerkubeResponsible: "None""
             providerConfigRef:
               name: provider-kubernetes
             writeConnectionSecretToRef:
               name: PATCH
-              namespace: enerkube-namespaces
+              namespace: enerkube-custom
         connectionDetails:
         - fromConnectionSecretKey: kubeconfig-edit
           name: kubeconfig-edit
@@ -237,36 +215,8 @@ spec:
           toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.enerkubeResponsible
         - fromFieldPath: spec.parameters.management
           toFieldPath: spec.forProvider.manifest.spec.values.managementNamespace
-        - fromFieldPath: spec.parameters.cost.costcenter
-          toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.enerkubeCostcenter
-          transforms:
-          - string:
-              fmt: '''%s'''
-              type: Format
-            type: string
-          type: FromCompositeFieldPath
         - fromFieldPath: spec.parameters.alerting
           toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.enerkubeAlerting
-        - fromFieldPath: spec.parameters.cost.consolidationUnit
-          toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.enerkubeConsolidationUnit
-          transforms:
-          - string:
-              fmt: '''%s'''
-              type: Format
-            type: string
-          type: FromCompositeFieldPath
-        - fromFieldPath: spec.parameters.cost.esign
-          toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.enerkubeEsign
-          transforms:
-          - string:
-              fmt: '''%s'''
-              type: Format
-            type: string
-          type: FromCompositeFieldPath
-        - fromFieldPath: spec.parameters.cost.costcenterResponsible
-          toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.enerkubeCostresponsible
-        - fromFieldPath: spec.parameters.cost.wbselement
-          toFieldPath: spec.forProvider.manifest.spec.values.namespaceinfo.wbsElement
   publishConnectionDetailsWithStoreConfigRef:
     name: default
 {{- end }}

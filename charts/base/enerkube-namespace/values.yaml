@@ -15,8 +15,8 @@ kubeconfig:
   # Namespace where the kubeconfig creation job is run
   jobNamespace: enerkube-namespaces
 
-# Endpoint for kubeconfig creation, e.g. https://6C68392CD711CBC02DFBD4F50456A1A2.gr7.eu-central-1.eks.amazonaws.com
-clusterEndpoint: ""
+# Endpoint for kubeconfig creation, e.g. 
+aksApi: ""
 
 managementNamespace: false
 
@@ -32,23 +32,18 @@ allowKubesystem: false
 
 # NamespaceInfo Values:
 namespaceinfo:
-  accountId: ""
-  enerkubeAlerting: []
-  enerkubeConsolidationUnit: "None"
-  enerkubeCostcenter: "None"
-  enerkubeCostresponsible: "None"
-  enerkubeEsign: "None"
-  cloudProvider: "AWS"
-  region: "eu-central-1"
-  enerkubeResponsible: "None"
-  wbsElement: "None"
+  subscriptionId: ""
+  Alerting: []
+  cloudProvider: "Azure"
+  location: "germanywestcentral"
+  Responsible: "None"
 
 permissions:
   view: []
-    # - namespace: ccp
+    # - namespace: test
     #   serviceAccount: read-only
-    # - namespace: ccp2
+    # - namespace: test2
     #   serviceAccount: read-only
   edit: []
-    # - namespace: ccp
+    # - namespace: test
     #   serviceAccount: default-login-serviceaccount

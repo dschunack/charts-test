@@ -25,12 +25,6 @@ spec:
     alerting:
       - foo.bar@enercity.de
       - kung.fu@enercity.de
-    cost:
-      costcenter: "Abc"
-      consolidationUnit: "234"
-      esign: "123"
-      costcenterResponsible: ying.yang@enercity.de
-      wbselement: "abc"
     permissions:
       view:
         - namespace: enerkube-test
@@ -41,4 +35,3 @@ spec:
   writeConnectionSecretToRef:
     name: enerkube-example
 ```
-

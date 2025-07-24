@@ -4,20 +4,15 @@ metadata:
   name: infos
   namespace: {{ .Values.namespaceName }}
 spec:
-  account: {{ .Values.namespaceinfo.accountId }}
-{{- if .Values.namespaceinfo.enerkubeAlerting }}
+  subscriptionid: {{ .Values.namespaceinfo.subscriptionid }}
+{{- if .Values.namespaceinfo.Alerting }}
   alerting: 
-{{ toYaml .Values.namespaceinfo.enerkubeAlerting | indent 2 | default "None"}}
+{{ toYaml .Values.namespaceinfo.Alerting | indent 2 | default "None"}}
 {{- else }}
   alerting: []
 {{- end }}
   clustername: {{ .Values.clusterName }}
-  consolidationunit: "{{ .Values.namespaceinfo.enerkubeConsolidationUnit }}"
-  costcenter: {{ .Values.namespaceinfo.enerkubeCostcenter }}
-  costresp: {{ .Values.namespaceinfo.enerkubeCostresponsible }}
-  esign: "{{ .Values.namespaceinfo.enerkubeEsign }}"
   namespace: {{ .Values.namespaceName }}
   provider: {{ .Values.namespaceinfo.cloudProvider }}
-  region: {{ .Values.namespaceinfo.region }}
-  responsible: {{ .Values.namespaceinfo.enerkubeResponsible }}
-  wbselement: {{ .Values.namespaceinfo.wbsElement }}
+  location: {{ .Values.namespaceinfo.location }}
+  responsible: {{ .Values.namespaceinfo.Responsible }}

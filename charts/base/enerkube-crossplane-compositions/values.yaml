@@ -5,10 +5,8 @@ namespace:
   # General Information for nsi and kubeconfig creation
   cluster:
     name: ""
-    endpoint: ""
-    accountId: ""
-    region: "eu-central-1"
+    aksapi: ""
+    subscriptionid: ""
+    location: "germanywestcentral"
   # Pattern to which namespace names must comply
   namePattern: "^(cx-)"
-didShares:
-  create: false

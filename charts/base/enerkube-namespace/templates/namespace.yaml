@@ -4,7 +4,7 @@ apiVersion: v1
 kind: Namespace
 metadata:
   labels:
-    enerkube-eks: {{ .Values.clusterName }}
+    clustername: {{ .Values.clusterName }}
     enerkube-managed: {{ .Values.enerkubeManagedNamespace | quote }}
     department: {{ $namespaceName }}
     team: {{ $namespaceName }}
