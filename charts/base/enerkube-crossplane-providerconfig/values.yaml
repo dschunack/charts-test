@@ -1,6 +1,6 @@
 tenantID: ""
 subscriptionId: ""
-clinetId: ""
+clientId: ""
 clusterName: ""
 providerconfigs:
   TBD: true

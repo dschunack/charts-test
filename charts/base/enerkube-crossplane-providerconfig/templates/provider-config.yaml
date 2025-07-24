@@ -9,7 +9,7 @@ spec:
   oidcTokenFilePath: /var/run/secrets/azure/tokens/azure-identity-token
   subscriptionID: {{ $.Values.subscriptionID }}
   tenantID: {{ $.Values.tenantID }}
-  clientID: {{ $.Values.clinetId }}
+  clientID: {{ $.Values.clientId }}
 ---
 apiVersion: kubernetes.crossplane.io/v1alpha1
 kind: ProviderConfig
