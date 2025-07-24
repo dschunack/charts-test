@@ -205,6 +205,22 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/log-shipper-stack-1.0.1-rc1/log-shipper-stack-1.0.1-rc1.tgz
     version: 1.0.1-rc1
+  - apiVersion: v2
+    created: "2025-07-24T09:57:42.623915727Z"
+    dependencies:
+    - name: logging-operator
+      repository: oci://ghcr.io/kube-logging/helm-charts
+      version: 5.3.0
+    - name: logging-operator-logging
+      repository: https://kube-logging.github.io/helm-charts
+      version: 4.2.2
+    description: A Helm chart for Kubernetes
+    digest: a95e5f9c0eb42d22df728d9b80dcac35cfdeab9fcd6489d1c1a727ce035e1605
+    name: log-shipper-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/log-shipper-stack-1.0.1-rc1/log-shipper-stack-1.0.1-rc1.tgz
+    version: 1.0.1-rc1
   logging-operator-crds:
   - apiVersion: v2
     created: "2025-07-23T08:03:06.840902123Z"
@@ -290,6 +306,36 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/monitoring-exporter-stack-1.0.2-rc1/monitoring-exporter-stack-1.0.2-rc1.tgz
     version: 1.0.2-rc1
+  - apiVersion: v2
+    created: "2025-07-24T09:57:42.878321639Z"
+    dependencies:
+    - condition: helm-exporter.enabled
+      name: helm-exporter
+      repository: https://shanestarcher.com/helm-charts
+      version: 1.2.16
+    - condition: cloud-exporter.enabled
+      name: cloud-exporter
+      repository: https://steveizzle.github.io/monitor_subnets/
+      version: 0.3.2
+    - condition: nvidia-dcgm-exporter.enabled
+      name: dcgm-exporter
+      repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+      version: 4.1.1
+    - condition: prometheus-windows-exporter.enabled
+      name: prometheus-windows-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 0.10.3
+    - condition: node-problem-detector.enabled
+      name: node-problem-detector
+      repository: https://charts.deliveryhero.io/
+      version: 2.3.14
+    description: A Helm chart for Kubernetes
+    digest: 369f218611165e28a3a086cd3ec60b997f7401ebf744fdd9f6fb258bcc47b8bd
+    name: monitoring-exporter-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/monitoring-exporter-stack-1.0.2-rc1/monitoring-exporter-stack-1.0.2-rc1.tgz
+    version: 1.0.2-rc1
   monitoring-infrastructure:
   - apiVersion: v2
     created: "2025-07-23T08:03:07.679641704Z"
@@ -327,4 +373,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-24T09:56:50.061796149Z"
+generated: "2025-07-24T09:57:43.015762244Z"
