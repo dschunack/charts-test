@@ -104,6 +104,26 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/enerkube-karpenter-infrastructure-0.1.4/enerkube-karpenter-infrastructure-0.1.4.tgz
     version: 0.1.4
+  enerkube-karpenter-roleassigment:
+  - apiVersion: v2
+    created: "2025-07-25T12:11:07.504400261Z"
+    description: A Helm chart for Kubernetes
+    digest: d918746d56c440be604005f27a5a7f6807c66ca9140e68696466a5bc84a83a42
+    name: enerkube-karpenter-roleassigment
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-karpenter-roleassigment-0.1.0/enerkube-karpenter-roleassigment-0.1.0.tgz
+    version: 0.1.0
+  enerkube-karpenter-useridentity:
+  - apiVersion: v2
+    created: "2025-07-25T12:11:07.644700035Z"
+    description: A Helm chart for Kubernetes
+    digest: 45f5c0bc8cece724d601d0e87d41dd9b0289a19528ef47333efc0bdbfc6d45f4
+    name: enerkube-karpenter-useridentity
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-karpenter-useridentity-0.1.0/enerkube-karpenter-useridentity-0.1.0.tgz
+    version: 0.1.0
   enerkube-namespace:
   - apiVersion: v2
     created: "2025-07-23T08:03:05.746209127Z"
@@ -418,4 +438,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-25T10:15:08.296892892Z"
+generated: "2025-07-25T12:11:07.644761871Z"
