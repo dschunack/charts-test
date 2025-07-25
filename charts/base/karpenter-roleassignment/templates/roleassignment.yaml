@@ -1,0 +1,13 @@
+{{- $ResourceName := printf "%s-%s" $.Values.clusterName karpenter -}}
+{{- $principalId := (lookup "managedidentity.azure.upbound.io/v1beta1" "UserAssignedIdentity" $ResourceName).status.atProvider.principalId -}}
+---
+apiVersion: authorization.azure.upbound.io/v1beta1
+kind: RoleAssignment
+metadata:
+  name:  "{{ .Values.clusterName }}-karpenter"
+spec:
+  forProvider:
+    principalId: 113ae076-e44b-4d42-a9d0-88ca170d63b1
+    principalType: ServicePrincipal
+    roleDefinitionName: Contributor
+    scope: /subscriptions/e412c397-7c30-4b15-9613-7c093095e3eb
