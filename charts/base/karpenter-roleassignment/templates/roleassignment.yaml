@@ -7,7 +7,7 @@ metadata:
   name:  "{{ .Values.clusterName }}-karpenter"
 spec:
   forProvider:
-    principalId: 113ae076-e44b-4d42-a9d0-88ca170d63b1
+    principalId: {{ $principalId }}
     principalType: ServicePrincipal
     roleDefinitionName: Contributor
-    scope: /subscriptions/e412c397-7c30-4b15-9613-7c093095e3eb
+    scope: "/subscriptions/{{ .Values.subscriptionId }}"
