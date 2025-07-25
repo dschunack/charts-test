@@ -146,7 +146,7 @@ spec:
                         kind: HelmRepository
                         name: enerkube-charts
                         namespace: enerkube-custom
-                      version: 0.1.0
+                      version: 0.1.2
                   interval: 10m
                   releaseName: PATCH
                   serviceAccountName: flux-applier
