@@ -186,6 +186,16 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/enerkube-karpenter-roleassigment-0.1.0/enerkube-karpenter-roleassigment-0.1.0.tgz
     version: 0.1.0
+  enerkube-karpenter-roleassignment:
+  - apiVersion: v2
+    created: "2025-07-28T06:23:17.87757488Z"
+    description: A Helm chart for Kubernetes
+    digest: 71383aa7d4046a8684814d9a4ba981d969bc51f851a494e273c391b46603fa34
+    name: enerkube-karpenter-roleassignment
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-karpenter-roleassignment-0.1.7/enerkube-karpenter-roleassignment-0.1.7.tgz
+    version: 0.1.7
   enerkube-karpenter-useridentity:
   - apiVersion: v2
     created: "2025-07-25T12:11:07.644700035Z"
@@ -510,4 +520,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-28T05:51:33.009528335Z"
+generated: "2025-07-28T06:23:17.877634301Z"
