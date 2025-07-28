@@ -86,6 +86,15 @@ entries:
     version: 0.0.5
   enerkube-crossplane-providers:
   - apiVersion: v2
+    created: "2025-07-28T10:10:49.038935559Z"
+    description: A Helm chart for Kubernetes
+    digest: 4ad3970e8b14de2367728067bdf611e7f4af6346639e1a3686a4303c1a47e6dc
+    name: enerkube-crossplane-providers
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-crossplane-providers-1.1.1/enerkube-crossplane-providers-1.1.1.tgz
+    version: 1.1.1
+  - apiVersion: v2
     created: "2025-07-28T08:41:43.866216904Z"
     description: A Helm chart for Kubernetes
     digest: fce30aa274f51da4ce57ff420ad1b44a08e955b9f9ecbeff3d67254a8c512e87
@@ -561,4 +570,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-28T08:41:43.866298316Z"
+generated: "2025-07-28T10:10:49.038994239Z"
