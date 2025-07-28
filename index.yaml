@@ -244,6 +244,28 @@ entries:
     version: 0.1.7
   enerkube-karpenter-stack:
   - apiVersion: v2
+    created: "2025-07-28T12:20:27.434733835Z"
+    dependencies:
+    - name: enerkube-karpenter-useridentity
+      repository: https://dschunack.github.io/charts-test
+      version: 0.1.0
+    - name: enerkube-karpenter-roleassignment
+      repository: https://dschunack.github.io/charts-test
+      version: 0.1.8
+    - name: karpenter-crd
+      repository: oci://mcr.microsoft.com/aks/karpenter
+      version: 1.6.1
+    - name: karpenter
+      repository: oci://mcr.microsoft.com/aks/karpenter
+      version: 1.6.1
+    description: A Helm chart for Kubernetes
+    digest: 5141f87b48bd101198f57b544ce660c7fbc3453badbf07a1d31c8d63e1079ce7
+    name: enerkube-karpenter-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-karpenter-stack-0.1.2/enerkube-karpenter-stack-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
     created: "2025-07-28T11:57:01.299434735Z"
     dependencies:
     - name: enerkube-karpenter-useridentity
@@ -611,4 +633,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-28T11:57:01.299511579Z"
+generated: "2025-07-28T12:20:27.434808816Z"
