@@ -15,7 +15,7 @@ kind: Provider
 metadata:
   name: provider-family-azure
 spec:
-  package: xpkg.crossplane.io/crossplane-contrib/provider-family-azure:v1
+  package: "xpkg.crossplane.io/crossplane-contrib/provider-family-azure:{{ default .Chart.AppVersion }}"
   runtimeConfigRef: 
     name: provider-family-azure
 ---
