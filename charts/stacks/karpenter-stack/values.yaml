@@ -47,7 +47,7 @@ karpenter:
     maxUnavailable: 1
   # -- SecurityContext for the pod.
   podSecurityContext: 
-    fsGroup: 65536
+    fsGroup: 65532
   # -- PriorityClass name for the pod.
   priorityClassName: system-cluster-critical
   # -- Override the default termination grace period for the pod.
@@ -56,7 +56,7 @@ karpenter:
   # This is required when using a custom CNI.
   hostNetwork: false
   # -- Configure the DNS Policy for the pod
-  dnsPolicy: Default
+  dnsPolicy: ClusterFirst
   # -- Configure DNS Config for the pod
   dnsConfig: {}
   #  options:
@@ -128,7 +128,7 @@ karpenter:
     sidecarVolumeMounts: []
     metrics:
       # -- The container port to use for metrics.
-      port: 8000
+      port: 8080
     healthProbe:
       # -- The container port to use for http health probe.
       port: 8081
@@ -142,26 +142,13 @@ karpenter:
       port: 8001
   # -- Global log level, defaults to 'info'
   logLevel: info
-  # -- Log configuration (Deprecated: Logging configuration will be dropped by v1, use logLevel instead)
-  logConfig:
-    # -- Whether to enable provisioning and mounting the log ConfigMap
-    enabled: false
-    # -- Log outputPaths - defaults to stdout only
-    outputPaths:
-      - stdout
-    # -- Log errorOutputPaths - defaults to stderr only
-    errorOutputPaths:
-      - stderr
-    # -- Log encoding - defaults to json - must be one of 'json', 'console'
-    logEncoding: json
-    # -- Component-based log configuration
-    logLevel:
-      # -- Global log level, defaults to 'info'
-      global: info
-      # -- Controller log level, defaults to 'info'
-      controller: info
-      # -- Error log level, defaults to 'error'
-      webhook: error
+  # -- Log outputPaths - defaults to stdout only
+  logOutputPaths:
+    - stdout
+  # -- Log errorOutputPaths - defaults to stderr only
+  logErrorOutputPaths:
+    - stderr
+  # -- Global Settings to configure Karpenter
   # -- Global Settings to configure Karpenter
   settings:
     # -- The maximum length of a batch window. The longer this is, the more pods we can consider for provisioning at one
@@ -171,34 +158,24 @@ karpenter:
     # faster than this time, the batching window will be extended up to the maxDuration. If they arrive slower, the pods
     # will be batched separately.
     batchIdleDuration: 1s
-    # -- Role to assume for calling AWS services.
-    assumeRoleARN: ""
-    # -- Duration of assumed credentials in minutes. Default value is 15 minutes. Not used unless assumeRoleARN set.
-    assumeRoleDuration: 15m
     # -- Cluster CA bundle for TLS configuration of provisioned nodes. If not set, this is taken from the controller's TLS configuration for the API server.
     clusterCABundle: ""
     # -- Cluster name.
     clusterName: ""
-    # -- Cluster endpoint. If not set, will be discovered during startup (EKS only)
+    # -- Cluster endpoint.
     clusterEndpoint: ""
-    # -- If true then assume we can't reach AWS services which don't have a VPC endpoint
-    # This also has the effect of disabling look-ups to the AWS pricing endpoint
-    isolatedVPC: false
     # -- The VM memory overhead as a percent that will be subtracted from the total memory for all instance types
     vmMemoryOverheadPercent: 0.075
-    # -- interruptionQueue is disabled if not specified. Enabling interruption handling may
-    # require additional permissions on the controller service account. Additional permissions are outlined in the docs.
-    interruptionQueue: ""
-    # -- Reserved ENIs are not included in the calculations for max-pods or kube-reserved
-    # This is most often used in the VPC CNI custom networking setup https://docs.aws.amazon.com/eks/latest/userguide/cni-custom-network.html
-    reservedENIs: "0"
+    # -- The global tags to use on all Azure infrastructure resources (VMs, etc.)
+    # TODO: not propagated yet ...
+    tags:
+
     # -- Feature Gate configuration values. Feature Gates will follow the same graduation process and requirements as feature gates
     # in Kubernetes. More information here https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/#feature-gates-for-alpha-or-beta-features
     featureGates:
-      # -- drift is in BETA and is enabled by default.
-      # Setting drift to false disables the drift disruption method to watch for drift between currently deployed nodes
-      # and the desired state of nodes set in nodepools and nodeclasses
-      drift: false
       # -- spotToSpotConsolidation is ALPHA and is disabled by default.
       # Setting this to true will enable spot replacement consolidation for both single and multi-node consolidation.
       spotToSpotConsolidation: false
+      # -- nodeRepair is ALPHA and is disabled by default.
+      # Setting this to true will enable node repair.
+      nodeRepair: false
