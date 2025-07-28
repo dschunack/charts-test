@@ -23,7 +23,7 @@ spec:
           - name: package-runtime
             resources:
               requests:
-                memory: 100
+                memory: "100Mi"
           priorityClassName: system-cluster-critical
 ---
 apiVersion: pkg.crossplane.io/v1beta1
@@ -50,7 +50,7 @@ spec:
           - name: package-runtime
             resources:
               requests:
-                memory: 100
+                memory: "100Mi"
           priorityClassName: system-cluster-critical
 ---
 apiVersion: pkg.crossplane.io/v1beta1
@@ -77,7 +77,7 @@ spec:
           - name: package-runtime
             resources:
               requests:
-                memory: 100
+                memory: "100Mi"
           priorityClassName: system-cluster-critical
 ---
 apiVersion: pkg.crossplane.io/v1beta1
@@ -104,7 +104,7 @@ spec:
           - name: package-runtime
             resources:
               requests:
-                memory: 100
+                memory: "100Mi"
           priorityClassName: system-cluster-critical
 ---
 apiVersion: pkg.crossplane.io/v1beta1
@@ -131,7 +131,7 @@ spec:
           - name: package-runtime
             resources:
               requests:
-                memory: 100
+                memory: "100Mi"
           priorityClassName: system-cluster-critical
 ---
 apiVersion: pkg.crossplane.io/v1beta1
@@ -158,5 +158,5 @@ spec:
           - name: package-runtime
             resources:
               requests:
-                memory: 100
+                memory: "100Mi"
           priorityClassName: system-cluster-critical
