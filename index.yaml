@@ -151,6 +151,16 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/enerkube-karpenter-infrastructure-0.1.4/enerkube-karpenter-infrastructure-0.1.4.tgz
     version: 0.1.4
+  enerkube-karpenter-nodepool:
+  - apiVersion: v2
+    created: "2025-07-29T13:59:35.421723442Z"
+    description: A Helm chart to configure Karpenter Nodepools
+    digest: 8a7a2565fd935de6854eed397420cee64be4a81d320f07c2e15b2135289ea379
+    name: enerkube-karpenter-nodepool
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-karpenter-nodepool-0.1.0/enerkube-karpenter-nodepool-0.1.0.tgz
+    version: 0.1.0
   enerkube-karpenter-roleassigment:
   - apiVersion: v2
     created: "2025-07-28T05:51:33.00938448Z"
@@ -665,4 +675,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-29T09:22:54.964322372Z"
+generated: "2025-07-29T13:59:35.804474058Z"
