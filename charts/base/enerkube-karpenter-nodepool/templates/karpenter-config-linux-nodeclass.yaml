@@ -1,6 +1,6 @@
 {{- $clusterName := .Values.clusterName | required ".Values.clusterName is required." -}}
-
 {{- range $nodeclass := .Values.NodeClasses.Linux }}
+---
 apiVersion: karpenter.azure.com/v1beta1
 kind: AKSNodeClass
 metadata:
