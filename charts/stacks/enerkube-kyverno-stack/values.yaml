@@ -217,7 +217,7 @@ policy-reporter:
       name: "kyverno-policy-reporter-ui"
 
   monitoring:
-    enabled: true
+    enabled: false
     serviceMonitor:
       labels:
         release: prometheus-operator
@@ -226,7 +226,7 @@ policy-reporter:
       namespace:
       dashboards:
         # -- Enable the deployment of grafana dashboards
-        enabled: true
+        enabled: false
         # -- Label to find dashboards using the k8s sidecar
         label: grafana_dashboard
         # -- Label value to find dashboards using the k8s sidecar
