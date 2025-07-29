@@ -9,15 +9,15 @@ spec:
     apiVersion: pkg.crossplane.io/v1beta1
     kind: DeploymentRuntimeConfig
     name: provider-kubernetes
----
-apiVersion: pkg.crossplane.io/v1
-kind: Provider
-metadata:
-  name: provider-family-azure
-spec:
-  package: xpkg.crossplane.io/crossplane-contrib/provider-family-azure:{{ default .Chart.AppVersion }}
-  runtimeConfigRef: 
-    name: provider-family-azure
+# ---
+# apiVersion: pkg.crossplane.io/v1
+# kind: Provider
+# metadata:
+#   name: provider-family-azure
+# spec:
+#   package: xpkg.crossplane.io/crossplane-contrib/provider-family-azure:{{ default .Chart.AppVersion }}
+#   runtimeConfigRef: 
+#     name: provider-family-azure
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider

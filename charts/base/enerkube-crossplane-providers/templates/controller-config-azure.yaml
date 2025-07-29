@@ -1,30 +1,30 @@
----
-apiVersion: pkg.crossplane.io/v1beta1
-kind: DeploymentRuntimeConfig
-metadata:
-  name: provider-family-azure
-spec:
-  serviceAccountTemplate:
-    metadata:
-      name: enerkube-provider-azure-family
-      labels:
-        azure.workload.identity/use: 'true'
-      annotations:
-        azure.workload.identity/client-id: {{ $.Values.clientId }}
-  deploymentTemplate:
-    spec:
-      selector: {}
-      template:
-        metadata:
-          labels:
-            azure.workload.identity/use: 'true'
-        spec:
-          containers:
-          - name: package-runtime
-            resources:
-              requests:
-                memory: "100Mi"
-          priorityClassName: system-cluster-critical
+# ---
+# apiVersion: pkg.crossplane.io/v1beta1
+# kind: DeploymentRuntimeConfig
+# metadata:
+#   name: provider-family-azure
+# spec:
+#   serviceAccountTemplate:
+#     metadata:
+#       name: enerkube-provider-azure-family
+#       labels:
+#         azure.workload.identity/use: 'true'
+#       annotations:
+#         azure.workload.identity/client-id: {{ $.Values.clientId }}
+#   deploymentTemplate:
+#     spec:
+#       selector: {}
+#       template:
+#         metadata:
+#           labels:
+#             azure.workload.identity/use: 'true'
+#         spec:
+#           containers:
+#           - name: package-runtime
+#             resources:
+#               requests:
+#                 memory: "100Mi"
+#           priorityClassName: system-cluster-critical
 ---
 apiVersion: pkg.crossplane.io/v1beta1
 kind: DeploymentRuntimeConfig
