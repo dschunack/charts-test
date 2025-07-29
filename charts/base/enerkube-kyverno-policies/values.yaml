@@ -24,7 +24,7 @@ policies:
     enerkubeAddDefaultCapabilities: false
     enerkubeAddDefaultNamespaceLabels: false
     enerkubeAddDefaultNodeSelector: true
-    enerkubeRestrictServiceTypeLB: true
+    enerkubeRestrictServiceTypeLB: false
     enerkubeRestrictLBcidrRanges: true
     enerkubeAddDefaultRunAsNonRoot: false
     enerkubeAddDefaultCapabilitiesToNamespaces: []

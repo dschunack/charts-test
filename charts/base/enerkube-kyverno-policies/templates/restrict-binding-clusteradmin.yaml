@@ -31,10 +31,8 @@ spec:
         resources:
           names: 
           - cluster-admin
-          - eks-admin
-          - cluster-reconciler
-          - eks:addon-cluster-admin
-          - flux-deployer
+          - admin
+          - flux-applier
       preconditions:
         all:
         - key: "{{`{{`}} request.operation {{`}}`}}"
