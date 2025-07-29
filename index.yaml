@@ -510,6 +510,22 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/kyverno-policy-stack-0.2.2/kyverno-policy-stack-0.2.2.tgz
     version: 0.2.2
+  - apiVersion: v2
+    created: "2025-07-29T16:20:21.804495906Z"
+    dependencies:
+    - name: kyverno-policies
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.4.1
+    - name: enerkube-kyverno-policies
+      repository: https://dschunack.github.io/charts-test
+      version: 0.1.0
+    description: A Helm chart for Kubernetes
+    digest: 534eb55f8510a5b08020015cbdc23e7d434348d23cbaaca4a2d73498fe2d239d
+    name: kyverno-policy-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/kyverno-policy-stack-0.1.0/kyverno-policy-stack-0.1.0.tgz
+    version: 0.1.0
   kyverno-stack:
   - apiVersion: v2
     created: "2025-07-23T08:04:10.954797928Z"
@@ -527,6 +543,22 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/kyverno-stack-0.3.1/kyverno-stack-0.3.1.tgz
     version: 0.3.1
+  - apiVersion: v2
+    created: "2025-07-29T16:20:22.043812774Z"
+    dependencies:
+    - name: kyverno
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.4.1
+    - name: policy-reporter
+      repository: https://kyverno.github.io/policy-reporter/
+      version: 3.1.4
+    description: A Helm chart for Kubernetes
+    digest: 2c96d93e7c3b1b2f77b41a5bcb0a8ba9771c95c6dd8eecb739f21a3821e2d266
+    name: kyverno-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/kyverno-stack-0.1.0/kyverno-stack-0.1.0.tgz
+    version: 0.1.0
   log-shipper-stack:
   - apiVersion: v2
     created: "2025-07-23T08:04:11.176605518Z"
@@ -712,4 +744,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-29T16:09:09.145733184Z"
+generated: "2025-07-29T16:20:22.04389102Z"
