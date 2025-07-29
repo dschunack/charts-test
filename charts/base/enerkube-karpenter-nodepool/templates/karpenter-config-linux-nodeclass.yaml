@@ -56,6 +56,3 @@ spec:
     imageGCLowThresholdPercent: 80
     cpuCFSQuota: true
 {{- end }}
-
-
-strict decoding error: unknown field "spec.OsDiskSizeGB

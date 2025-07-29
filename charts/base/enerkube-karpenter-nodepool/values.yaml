@@ -9,7 +9,7 @@ clusterName: ""
 NodePools:
   Linux:
     - name: default
-      nodeClassRef: 
+      nodeClassRef: ubuntu
       skuFamily: '[B,D]'
       capacityType: '[on-demand]'
       instanceArch: '[amd64]'
