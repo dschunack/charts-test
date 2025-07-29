@@ -5,12 +5,13 @@
 nameOverride: ""
 fullnameOverride: ""
 clusterName: ""
+location: ""
 
 NodePools:
   Linux:
     - name: default
       nodeClassRef: ubuntu
-      skuFamily: '[B,D]'
+      skuFamily: '["A", "B", "D", "DC", "F", "FX", "EB", "EC", "M" ]'
       capacityType: '[on-demand]'
       instanceArch: '[amd64]'
       weight: 100
@@ -43,7 +44,7 @@ NodePools:
           duration: 22h
     - name: large
       nodeClassRef: ubuntu-large
-      skuFamily: '["c", "m", "r", "t", "z"]'
+      skuFamily: '["A", "B", "D", "DC", "F", "FX", "EB", "EC", "M" ]'
       capacityType: '["on-demand"]'
       instanceArch: '["amd64"]'
       weight: 90
@@ -74,7 +75,7 @@ NodePools:
           - "Drifted"
     - name: arm64
       nodeClassRef: ubuntu-arm64
-      skuFamily: '["c", "m", "r", "t"]'
+      skuFamily: '["B", "D", "E" ]'
       instanceArch: '["arm64"]'
       capacityType: '["on-demand"]'
       weight: 90
@@ -105,7 +106,7 @@ NodePools:
           - "Drifted"
     - name: gpu
       nodeClassRef: ubuntu-gpu
-      skuFamily: '["g", "p"]'
+      skuFamily: '["NC", "ND", "NG", "NV" ]'
       capacityType: '["on-demand"]'
       instanceArch: '["arm64", "amd64"]'
       weight: 50
@@ -136,7 +137,7 @@ NodePools:
           - "Drifted"
     - name: spot
       nodeClassRef: ubuntu-spot
-      skuFamily: '["c", "m", "r", "t", "z"]'
+      skuFamily: '["A", "B", "D", "DC", "F", "FX", "E", "EB", "EC", "M" ]'
       instanceArch: '["arm64", "amd64"]'
       capacityType: '["spot"]'
       weight: 70
