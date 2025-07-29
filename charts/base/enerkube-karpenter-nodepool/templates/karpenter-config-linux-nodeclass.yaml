@@ -11,34 +11,51 @@ metadata:
     kubernetes.io/description: "AKSNodeClass for {{ .name }}"
 spec:
   imageFamily: {{ .imageFamily }}
+  maxPods: 110
   tags:
     Name: {{ $clusterName }}-vm-{{ .name }}
     OWNER: enerkube-Team
     Application: enerkube
-  OsDiskSizeGB:  {{ .volumeSize }}
+  osDiskSizeGB:  {{ .volumeSize }}
+  # vnetSubnetID: # Optional, default is used
+  # podPidsLimit:
+  # topologyManagerPolicy:
+    # default: none
+    # description: |-
+    #   topologyManagerPolicy is the name of the topology manager policy to use.
+    #   Valid values include:
+
+    #   - `restricted`: kubelet only allows pods with optimal NUMA node alignment for requested resources;
+    #   - `best-effort`: kubelet will favor pods with NUMA alignment of CPU and device resources;
+    #   - `none`: kubelet has no knowledge of NUMA alignment of a pod's CPU and device resources.
+    #   - `single-numa-node`: kubelet only allows pods with a single NUMA alignment
+    #     of CPU and device resources.
   kubelet:
-    systemReserved:
-      cpu: 250m
-      memory: 450Mi
-      ephemeral-storage: 1Gi
-    kubeReserved:
-      cpu: 250m
-      memory: 450Mi
-      ephemeral-storage: 1Gi
-    evictionHard:
-      memory.available: 5%
-      nodefs.available: 10%
-      nodefs.inodesFree: 10%
-    evictionSoft:
-      memory.available: 7%
-      nodefs.available: 15%
-      nodefs.inodesFree: 15%
-    evictionSoftGracePeriod:
-      memory.available: 1m
-      nodefs.available: 1m30s
-      nodefs.inodesFree: 2m
-    evictionMaxPodGracePeriod: 60
+    # systemReserved:
+    #   cpu: 250m
+    #   memory: 450Mi
+    #   ephemeral-storage: 1Gi
+    # kubeReserved:
+    #   cpu: 250m
+    #   memory: 450Mi
+    #   ephemeral-storage: 1Gi
+    # evictionHard:
+    #   memory.available: 5%
+    #   nodefs.available: 10%
+    #   nodefs.inodesFree: 10%
+    # evictionSoft:
+    #   memory.available: 7%
+    #   nodefs.available: 15%
+    #   nodefs.inodesFree: 15%
+    # evictionSoftGracePeriod:
+    #   memory.available: 1m
+    #   nodefs.available: 1m30s
+    #   nodefs.inodesFree: 2m
+    # evictionMaxPodGracePeriod: 60
     imageGCHighThresholdPercent: 85
     imageGCLowThresholdPercent: 80
     cpuCFSQuota: true
 {{- end }}
+
+
+strict decoding error: unknown field "spec.OsDiskSizeGB

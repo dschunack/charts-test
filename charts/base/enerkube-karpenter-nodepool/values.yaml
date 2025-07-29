@@ -170,7 +170,7 @@ NodeClasses:
   Linux:
     - name: default
       nodePoolName: ubuntu
-      imageFamily: Ubuntu2204
+      imageFamily: Ubuntu2204   # Ubuntu2204 or AzureLinux
       volumeSize: 150Gi
     - name: large
       nodePoolName: ubuntu-large
