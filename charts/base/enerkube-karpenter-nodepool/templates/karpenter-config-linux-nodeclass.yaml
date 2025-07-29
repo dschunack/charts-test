@@ -1,4 +1,3 @@
-#{{- $instanceProfile := .Values.instanceProfile | required ".Values.instanceProfile is required." -}}
 {{- $clusterName := .Values.clusterName | required ".Values.clusterName is required." -}}
 
 {{- range $nodeclass := .Values.NodeClasses.Linux }}

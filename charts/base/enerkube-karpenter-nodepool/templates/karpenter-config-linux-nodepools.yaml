@@ -40,9 +40,6 @@ spec:
         - key: karpenter.sh/capacity-type
           operator: In
           values: {{ .capacityType }}
-        - key: karpenter.k8s.aws/instance-category
-          operator: In
-          values: 
         - key: karpenter.azure.com/sku-family
           operator: In
           values: {{ .skuFamily }}
