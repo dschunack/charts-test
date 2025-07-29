@@ -4,21 +4,19 @@
 
 nameOverride: ""
 fullnameOverride: ""
-instanceProfile: "IAM-LINUX-PROFILE"
-instanceWinProfile: "IAM-WINDOWS-PROFILE"
-clusterName: "eks-render-template"
+clusterName: "aks-render-template"
 
 NodePools:
   Linux:
     - name: default
-      nodeClassRef: al2
-      instanceCategory: '[c, m, r, t, z]'
+      nodeClassRef: 
+      skuFamily: '[B,D]'
       capacityType: '[on-demand]'
       instanceArch: '[amd64]'
       weight: 100
       taint: {}
-      InstanceSize: '[medium, large, xlarge, 2xlarge, 4xlarge, 8xlarge]'
-      InstanceSizeOperator: "In"
+      # InstanceSize: '[medium, large, xlarge, 2xlarge, 4xlarge, 8xlarge]'
+      # InstanceSizeOperator: "In"
       expireAfter: 1440h
       disruption:
         consolidateAfter: 300s
@@ -44,8 +42,8 @@ NodePools:
           nodes: "0"
           duration: 22h
     - name: large
-      nodeClassRef: al2-large
-      instanceCategory: '["c", "m", "r", "t", "z"]'
+      nodeClassRef: ubuntu-large
+      skuFamily: '["c", "m", "r", "t", "z"]'
       capacityType: '["on-demand"]'
       instanceArch: '["amd64"]'
       weight: 90
@@ -53,8 +51,8 @@ NodePools:
         name: "large"
         effect: NoSchedule
         values: "true"
-      InstanceSize: '["nano", "micro", "small", "medium"]'
-      InstanceSizeOperator: "NotIn"
+      # InstanceSize: '["nano", "micro", "small", "medium"]'
+      # InstanceSizeOperator: "NotIn"
       expireAfter: 1440h
       disruption:
         consolidateAfter: 120s
@@ -75,8 +73,8 @@ NodePools:
           reasons:
           - "Drifted"
     - name: arm64
-      nodeClassRef: al2-arm64
-      instanceCategory: '["a", "c", "m", "r", "t"]'
+      nodeClassRef: ubuntu-arm64
+      skuFamily: '["c", "m", "r", "t"]'
       instanceArch: '["arm64"]'
       capacityType: '["on-demand"]'
       weight: 90
@@ -84,8 +82,8 @@ NodePools:
         name: "arm64"
         effect: NoSchedule
         values: "true"
-      InstanceSize: '["nano", "micro", "small"]'
-      InstanceSizeOperator: "NotIn"
+      # InstanceSize: '["nano", "micro", "small"]'
+      # InstanceSizeOperator: "NotIn"
       expireAfter: 1440h
       disruption:
         consolidateAfter: 300s
@@ -106,8 +104,8 @@ NodePools:
           reasons:
           - "Drifted"
     - name: gpu
-      nodeClassRef: al2-gpu
-      instanceCategory: '["g", "p"]'
+      nodeClassRef: ubuntu-gpu
+      skuFamily: '["g", "p"]'
       capacityType: '["on-demand"]'
       instanceArch: '["arm64", "amd64"]'
       weight: 50
@@ -115,8 +113,8 @@ NodePools:
         name: "gpu"
         effect: NoSchedule
         values: "true"
-      InstanceSize: '["nano", "micro", "small"]'
-      InstanceSizeOperator: "NotIn"
+      # InstanceSize: '["nano", "micro", "small"]'
+      # InstanceSizeOperator: "NotIn"
       expireAfter: 168h
       disruption:
         consolidateAfter: 60s
@@ -137,8 +135,8 @@ NodePools:
           reasons:
           - "Drifted"
     - name: spot
-      nodeClassRef: al2-spot
-      instanceCategory: '["a", "c", "m", "r", "t", "z"]'
+      nodeClassRef: ubuntu-spot
+      skuFamily: '["c", "m", "r", "t", "z"]'
       instanceArch: '["arm64", "amd64"]'
       capacityType: '["spot"]'
       weight: 70
@@ -146,8 +144,8 @@ NodePools:
         name: "spot"
         effect: NoSchedule
         values: "true"
-      InstanceSize: '["nano", "micro", "small"]'
-      InstanceSizeOperator: "NotIn"
+      # InstanceSize: '["nano", "micro", "small"]'
+      # InstanceSizeOperator: "NotIn"
       expireAfter: 1440h
       disruption:
         consolidateAfter: 300s
@@ -168,114 +166,25 @@ NodePools:
           reasons:
           - "Drifted"
     
-  Windows:
-    - name: windows2019
-      nodeClassRef: windows2019
-      instanceCategory: '["c", "m", "r", "t", "z"]'
-      capacityType: '["on-demand"]'
-      instanceArch: '["amd64"]'
-      weight: 40
-      taint: {}
-      InstanceSize: '["nano", "micro", "small"]'
-      InstanceSizeOperator: "NotIn"
-      expireAfter: 1440h
-      disruption:
-        consolidateAfter: 900s
-        consolidationPolicy: WhenEmpty
-        budgets:
-        - nodes: "100%"
-          reasons:
-          - "Empty"
-        - schedule: "0 2 * * *"
-          reasons:
-          - "Underutilized"
-          nodes: "0"
-          duration: 22h
-        - nodes: "0"
-          reasons:
-          - "Drifted"
-    - name: windows2022
-      nodeClassRef: windows2022
-      instanceCategory: '["c", "m", "r", "t", "z"]'
-      capacityType: '["on-demand"]'
-      instanceArch: '["amd64"]'
-      weight: 50
-      taint: {}
-      InstanceSize: '["nano", "micro", "small"]'
-      InstanceSizeOperator: "NotIn"
-      expireAfter: 1440h
-      disruption:
-        consolidateAfter: 900s
-        consolidationPolicy: WhenEmpty
-        budgets:
-        - nodes: "100%"
-          reasons:
-          - "Empty"
-        - schedule: "0 2 * * *"
-          reasons: 
-          - "Underutilized"
-          nodes: "0"
-          duration: 22h
-        - nodes: "0"
-          reasons:
-          - "Drifted"
-
 NodeClasses:
   Linux:
     - name: default
-      nodePoolName: al2
-      amiFamily: al2
+      nodePoolName: ubuntu
+      imageFamily: Ubuntu2204
       volumeSize: 150Gi
-      volumeType: gp3
-      internetFacing: false
-      awsChina: false
-      podCidr: true
     - name: large
-      nodePoolName: al2-large
-      amiFamily: al2
+      nodePoolName: ubuntu-large
+      imageFamily: Ubuntu2204
       volumeSize: 150Gi
-      volumeType: gp3
-      internetFacing: false
-      awsChina: false
-      podCidr: true
     - name: arm64
-      nodePoolName: al2-arm64
-      amiFamily: al2
+      nodePoolName: ubuntu-arm64
+      imageFamily: Ubuntu2204
       volumeSize: 150Gi
-      volumeType: gp3
-      internetFacing: false
-      awsChina: false
-      podCidr: true
     - name: gpu
-      nodePoolName: al2-gpu
-      amiFamily: al2
+      nodePoolName: ubuntu-gpu
+      imageFamily: Ubuntu2204
       volumeSize: 150Gi
-      volumeType: gp3
-      internetFacing: false
-      awsChina: false
-      podCidr: true
     - name: spot
-      nodePoolName: al2-spot
-      amiFamily: al2
+      nodePoolName: ubuntu-spot
+      imageFamily: Ubuntu2204
       volumeSize: 150Gi
-      volumeType: gp3
-      internetFacing: false
-      awsChina: false
-      podCidr: true
-  Windows:
-    - name: windows2019
-      nodePoolName: windows2019
-      amiFamily: windows2019
-      volumeSize: 150Gi
-      volumeType: gp3
-      internetFacing: false
-      windowsBuild: 10.0.17763
-      runtimeClassName: windows-server-2019
-    - name: windows2022
-      nodePoolName: windows2022
-      amiFamily: windows2022
-      volumeSize: 150Gi
-      volumeType: gp3
-      internetFacing: false
-      windowsBuild: 10.0.20348
-      runtimeClassName: windows-server-2022

@@ -12,6 +12,10 @@ metadata:
     {{- include "karpenter-nodepool.labels" $ | nindent 4 }}
 spec:
   template:
+    metadata:
+      labels:
+        # required for Karpenter to predict overhead from cilium DaemonSet
+        kubernetes.azure.com/ebpf-dataplane: cilium
     spec:
       expireAfter: {{ $nodepool.expireAfter }}
       terminationGracePeriod: 12h
@@ -21,6 +25,11 @@ spec:
         - key: {{ .name }}
           value: "{{ .values }}"
           effect: {{ .effect }}{{ end }}{{ end }}
+      startupTaints:
+      # https://karpenter.sh/docs/concepts/nodepools/#cilium-startup-taint
+      - key: node.cilium.io/agent-not-ready
+        effect: NoExecute
+        value: "true"
       requirements:
         - key: kubernetes.io/arch
           operator: In
@@ -33,20 +42,10 @@ spec:
           values: {{ .capacityType }}
         - key: karpenter.k8s.aws/instance-category
           operator: In
-          values: {{ .instanceCategory }}
-        - key: "karpenter.k8s.aws/instance-family"
-          operator: NotIn
-          values: ["m7i-flex","c7i-flex"]
-        - key: karpenter.k8s.aws/instance-size
-          operator: {{ .InstanceSizeOperator }}
-          values: {{ .InstanceSize }}
-        {{- if ne .name "arm64" }}
-        - key: karpenter.k8s.aws/instance-generation
-          operator: Gt
-          values: ["2"]{{ end }}
-        - key: "nodepoolname"
+          values: 
+        - key: karpenter.azure.com/sku-family
           operator: In
-          values: ["{{ .name }}"]
+          values: {{ .skuFamily }}
       {{- if .taint }}
       {{- with .taint }}
         - key: {{ .name }}
@@ -56,9 +55,16 @@ spec:
           operator: In
           values: ["true"]{{ end }}{{ end }}
       nodeClassRef:
-        group: karpenter.k8s.aws
-        kind: EC2NodeClass
+        group: karpenter.azure.com
+        kind: AKSNodeClass
         name: {{ .nodeClassRef }}
   disruption: {{ .disruption | toYaml | nindent 4 }}
   weight: {{ $nodepool.weight }}
 {{- end }}
+
+
+
+  # disruption:
+  #   consolidateAfter: 0s
+  #   budgets:
+  #   - nodes: 30%

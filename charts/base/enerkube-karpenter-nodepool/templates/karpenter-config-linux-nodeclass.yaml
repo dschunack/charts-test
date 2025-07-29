@@ -1,0 +1,45 @@
+#{{- $instanceProfile := .Values.instanceProfile | required ".Values.instanceProfile is required." -}}
+{{- $clusterName := .Values.clusterName | required ".Values.clusterName is required." -}}
+
+{{- range $nodeclass := .Values.NodeClasses.Linux }}
+apiVersion: karpenter.azure.com/v1beta1
+kind: AKSNodeClass
+metadata:
+  name: {{ .nodePoolName }}
+  labels:
+    {{- include "karpenter-nodepool.labels" $ | nindent 4 }}
+  annotations:
+    kubernetes.io/description: "AKSNodeClass for {{ .name }}"
+spec:
+  imageFamily: {{ .imageFamily }}
+  tags:
+    Name: {{ $clusterName }}-vm-{{ .name }}
+    OWNER: enerkube-Team
+    Application: enerkube
+  OsDiskSizeGB:  {{ .volumeSize }}
+  kubelet:
+    systemReserved:
+      cpu: 250m
+      memory: 450Mi
+      ephemeral-storage: 1Gi
+    kubeReserved:
+      cpu: 250m
+      memory: 450Mi
+      ephemeral-storage: 1Gi
+    evictionHard:
+      memory.available: 5%
+      nodefs.available: 10%
+      nodefs.inodesFree: 10%
+    evictionSoft:
+      memory.available: 7%
+      nodefs.available: 15%
+      nodefs.inodesFree: 15%
+    evictionSoftGracePeriod:
+      memory.available: 1m
+      nodefs.available: 1m30s
+      nodefs.inodesFree: 2m
+    evictionMaxPodGracePeriod: 60
+    imageGCHighThresholdPercent: 85
+    imageGCLowThresholdPercent: 80
+    cpuCFSQuota: true
+{{- end }}
