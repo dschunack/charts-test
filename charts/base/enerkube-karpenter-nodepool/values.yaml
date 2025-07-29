@@ -171,20 +171,20 @@ NodeClasses:
     - name: default
       nodePoolName: ubuntu
       imageFamily: Ubuntu2204   # Ubuntu2204 or AzureLinux
-      volumeSize: 150Gi
+      volumeSize: 150
     - name: large
       nodePoolName: ubuntu-large
       imageFamily: Ubuntu2204
-      volumeSize: 150Gi
+      volumeSize: 150
     - name: arm64
       nodePoolName: ubuntu-arm64
       imageFamily: Ubuntu2204
-      volumeSize: 150Gi
+      volumeSize: 150
     - name: gpu
       nodePoolName: ubuntu-gpu
       imageFamily: Ubuntu2204
-      volumeSize: 150Gi
+      volumeSize: 150
     - name: spot
       nodePoolName: ubuntu-spot
       imageFamily: Ubuntu2204
-      volumeSize: 150Gi
+      volumeSize: 150
