@@ -1,6 +1,5 @@
 # Subchart Values
 kyverno:
-
   features:
     policyExceptions:
       enabled: true
@@ -85,7 +84,7 @@ kyverno:
         matchLabelKeys:
           - pod-template-hash
     serviceMonitor:
-      enabled: true
+      enabled: false # Monitoring not ready yet
       additionalLabels:
         release: kube-prometheus-stack
       interval: 30s
@@ -217,7 +216,7 @@ policy-reporter:
       name: "kyverno-policy-reporter-ui"
 
   monitoring:
-    enabled: false
+    enabled: false # Monitoring not ready yet
     serviceMonitor:
       labels:
         release: prometheus-operator
@@ -226,7 +225,7 @@ policy-reporter:
       namespace:
       dashboards:
         # -- Enable the deployment of grafana dashboards
-        enabled: false
+        enabled: false # Monitoring not ready yet
         # -- Label to find dashboards using the k8s sidecar
         label: grafana_dashboard
         # -- Label value to find dashboards using the k8s sidecar
