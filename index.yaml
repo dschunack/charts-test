@@ -400,6 +400,22 @@ entries:
     version: 0.1.0
   enerkube-kyverno-policy-stack:
   - apiVersion: v2
+    created: "2025-07-30T06:45:40.307395962Z"
+    dependencies:
+    - name: kyverno-policies
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.4.4
+    - name: enerkube-kyverno-policies
+      repository: https://dschunack.github.io/charts-test
+      version: 0.1.0
+    description: A Helm chart for Kubernetes
+    digest: 75dc8dad4c9bf98953de0518e7edbe119b3ea00327dfdd0e41c58166ef0bc93a
+    name: enerkube-kyverno-policy-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-kyverno-policy-stack-0.1.1/enerkube-kyverno-policy-stack-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     created: "2025-07-30T06:34:28.909219904Z"
     dependencies:
     - name: kyverno-policies
@@ -416,6 +432,22 @@ entries:
     - https://github.com/dschunack/charts-test/releases/download/enerkube-kyverno-policy-stack-0.1.0/enerkube-kyverno-policy-stack-0.1.0.tgz
     version: 0.1.0
   enerkube-kyverno-stack:
+  - apiVersion: v2
+    created: "2025-07-30T06:45:40.525987404Z"
+    dependencies:
+    - name: kyverno
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.4.4
+    - name: policy-reporter
+      repository: https://kyverno.github.io/policy-reporter/
+      version: 3.3.2
+    description: A Helm chart for Kubernetes
+    digest: 33abe008dfe1cc5b7ce203a3bb854f2a1d5ce3e08fb7dee2d4f060a93ccfe751
+    name: enerkube-kyverno-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-kyverno-stack-0.1.1/enerkube-kyverno-stack-0.1.1.tgz
+    version: 0.1.1
   - apiVersion: v2
     created: "2025-07-30T06:34:29.120301451Z"
     dependencies:
@@ -778,4 +810,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-30T06:34:29.120401037Z"
+generated: "2025-07-30T06:45:40.526055291Z"
