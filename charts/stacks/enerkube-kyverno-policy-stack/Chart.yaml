@@ -27,5 +27,5 @@ dependencies:
   version: "3.4.4"
   repository: "https://kyverno.github.io/kyverno/"
 - name: enerkube-kyverno-policies
-  version: "0.1.1"
+  version: "0.1.2"
   repository: "https://dschunack.github.io/charts-test"
