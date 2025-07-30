@@ -1,3 +1,4 @@
+{{- $UAIRandom := randAlphaNum 8 | nospace -}}
 ---
 apiVersion: managedidentity.azure.upbound.io/v1beta1
 kind: UserAssignedIdentity
@@ -6,7 +7,7 @@ metadata:
     meta.upbound.io/karpenter-id: managedidentity/v1beta1/userassignedidentity
   labels:
     app: karpenter
-  name: "{{ .Values.clusterName }}-karpenter"
+  name: "{{ .Values.clusterName }}-karpenter-{{ $UAIRandom }}"
 spec:
   forProvider:
     location: {{ .Values.location }}
