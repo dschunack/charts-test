@@ -390,6 +390,15 @@ entries:
     version: 0.1.0
   enerkube-kyverno-policies:
   - apiVersion: v2
+    created: "2025-07-30T08:07:51.353264264Z"
+    description: A Helm chart for Enerkuibe Kyverno Policies
+    digest: 3d5c9dd04ea7fb8e2d6b3d79ca98150e9a404ccd1c34e3619f42e24b769f802c
+    name: enerkube-kyverno-policies
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-kyverno-policies-0.1.1/enerkube-kyverno-policies-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     created: "2025-07-29T16:09:09.145654994Z"
     description: A Helm chart for Enerkuibe Kyverno Policies
     digest: d2038a373798ee81c70eaff13761246d4711a11a24c37d2c58aac20e8326fb38
@@ -810,4 +819,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-30T06:45:40.526055291Z"
+generated: "2025-07-30T08:07:51.353362742Z"
