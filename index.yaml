@@ -398,6 +398,40 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/enerkube-kyverno-policies-0.1.0/enerkube-kyverno-policies-0.1.0.tgz
     version: 0.1.0
+  enerkube-kyverno-policy-stack:
+  - apiVersion: v2
+    created: "2025-07-30T06:34:28.909219904Z"
+    dependencies:
+    - name: kyverno-policies
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.4.1
+    - name: enerkube-kyverno-policies
+      repository: https://dschunack.github.io/charts-test
+      version: 0.1.0
+    description: A Helm chart for Kubernetes
+    digest: fed641bc64b3b811c331158282c69485f158fd5e1c38fa239dc8f814d6f62f0e
+    name: enerkube-kyverno-policy-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-kyverno-policy-stack-0.1.0/enerkube-kyverno-policy-stack-0.1.0.tgz
+    version: 0.1.0
+  enerkube-kyverno-stack:
+  - apiVersion: v2
+    created: "2025-07-30T06:34:29.120301451Z"
+    dependencies:
+    - name: kyverno
+      repository: https://kyverno.github.io/kyverno/
+      version: 3.4.1
+    - name: policy-reporter
+      repository: https://kyverno.github.io/policy-reporter/
+      version: 3.1.4
+    description: A Helm chart for Kubernetes
+    digest: 1a48439ab47ed4391fa4e1883a3592450ebcb8290d1e81aa7a33ef368ae6f81a
+    name: enerkube-kyverno-stack
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-kyverno-stack-0.1.0/enerkube-kyverno-stack-0.1.0.tgz
+    version: 0.1.0
   enerkube-namespace:
   - apiVersion: v2
     created: "2025-07-23T08:03:05.746209127Z"
@@ -744,4 +778,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-29T16:20:22.04389102Z"
+generated: "2025-07-30T06:34:29.120401037Z"
