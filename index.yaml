@@ -380,6 +380,15 @@ entries:
     version: 0.1.0
   enerkube-karpenter-useridentity:
   - apiVersion: v2
+    created: "2025-07-30T14:22:55.262766861Z"
+    description: A Helm chart for Kubernetes
+    digest: 120f9bbba465413f777488bc63c9901ac6990ecaf23b5b181d2d8d0b060166bd
+    name: enerkube-karpenter-useridentity
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-karpenter-useridentity-0.1.1/enerkube-karpenter-useridentity-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     created: "2025-07-25T12:11:07.644700035Z"
     description: A Helm chart for Kubernetes
     digest: 45f5c0bc8cece724d601d0e87d41dd9b0289a19528ef47333efc0bdbfc6d45f4
@@ -869,4 +878,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-07-30T08:43:03.569836398Z"
+generated: "2025-07-30T14:22:55.262869769Z"
