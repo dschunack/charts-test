@@ -3,12 +3,12 @@ policies:
     RestrictSecretStore: false
   validate:
     CheckKernelForCVE: Enforce
-    CheckSupplementalGroups: Audit
+    CheckSupplementalGroups: Enforce
     enerkubeDisallowLatestTag: Enforce
     enerkubeCheckCRDAccess: Enforce
     enerkubeCheckDeprecatedApis: Audit
     PreventCr8escape: Enforce
-    RequireDropAll: Audit
+    RequireDropAll: Enforce
     RestrictEscalationVerbsRoles: Enforce
     RestrictResourcesBlacklist: Enforce
     RestrictWildcardResources: Enforce
@@ -16,10 +16,10 @@ policies:
     RestrictWildcardVerbs: Enforce
     RestrictBindingClusteradmin: Enforce
     RestrictPriorityClasses: Audit
-    RequireRunAsNonroot: Audit
+    RequireRunAsNonroot: Enforce
     enerkubeRestrictBindingDefaultSA: Enforce
     enerkubeDisallowEfsProvisioner: Enforce
-    RequireRunAsNonRootGroups: Audit
+    RequireRunAsNonRootGroups: Enforce
   mutate:
     enerkubeAddDefaultCapabilities: false
     enerkubeAddDefaultNamespaceLabels: false

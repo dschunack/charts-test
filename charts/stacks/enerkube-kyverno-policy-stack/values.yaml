@@ -30,7 +30,7 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-managed
+            - key: enerkube-managed
               operator: NotIn
               values:
               - "true"
@@ -41,7 +41,7 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-managed
+            - key: enerkube-managed
               operator: NotIn
               values:
               - "true"
@@ -50,7 +50,7 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-kyverno-host-namespaces
+            - key: enerkube-kyverno-host-namespaces
               operator: In
               values:
               - "true"
@@ -61,7 +61,7 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-managed
+            - key: enerkube-managed
               operator: NotIn
               values:
               - "true"
@@ -70,7 +70,7 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-kyverno-host-path
+            - key: enerkube-kyverno-host-path
               operator: In
               values:
               - "true"
@@ -81,7 +81,7 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-managed
+            - key: enerkube-managed
               operator: NotIn
               values:
               - "true"
@@ -90,7 +90,7 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-kyverno-host-ports
+            - key: enerkube-kyverno-host-ports
               operator: In
               values:
               - "true"
@@ -101,7 +101,7 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-managed
+            - key: enerkube-managed
               operator: NotIn
               values:
               - "true"
@@ -110,7 +110,7 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-kyverno-host-process
+            - key: enerkube-kyverno-host-process
               operator: In
               values:
               - "true"
@@ -121,7 +121,7 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-managed
+            - key: enerkube-managed
               operator: NotIn
               values:
               - "true"
@@ -130,7 +130,7 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-kyverno-privileged
+            - key: enerkube-kyverno-privileged
               operator: In
               values:
               - "true"
@@ -141,7 +141,7 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-managed
+            - key: enerkube-managed
               operator: NotIn
               values:
               - "true"
@@ -150,21 +150,21 @@ kyverno-policies:
           - Pod
           namespaceSelector:
             matchExpressions:
-            - key: cmo-kyverno-runasroot
+            - key: enerkube-kyverno-runasroot
               operator: In
               values:
               - "true"
 
-kyverno-cmo-policies:
+enerkube-kyverno-policies:
   policies:
     enable:
       RestrictSecretStore: false
     validate:
       CheckKernelForCVE: Enforce
       CheckSupplementalGroups: Enforce
-      CMODisallowLatestTag: Enforce
-      CMOCheckCRDAccess: Enforce
-      CMOCheckDeprecatedApis: Audit
+      enerkubeDisallowLatestTag: Enforce
+      enerkubeCheckCRDAccess: Enforce
+      enerkubeCheckDeprecatedApis: Audit
       PreventCr8escape: Enforce
       RequireDropAll: Enforce
       RestrictEscalationVerbsRoles: Enforce
@@ -173,26 +173,26 @@ kyverno-cmo-policies:
       RestrictApiBlacklist: Enforce
       RestrictWildcardVerbs: Enforce
       RestrictBindingClusteradmin: Enforce
-      RestrictPriorityClasses: Audit
+      RestrictPriorityClasses: Enforce
       RequireRunAsNonroot: Enforce
-      CMORestrictBindingDefaultSA: Enforce
-      CMODisallowEfsProvisioner: Enforce
+      enerkubeRestrictBindingDefaultSA: Enforce
+      enerkubeDisallowEfsProvisioner: Enforce
       RequireRunAsNonRootGroups: Enforce
     mutate:
-      CMOAddDefaultCapabilities: false
-      CMOAddDefaultNamespaceLabels: false
-      CMOAddDefaultNodeSelector: true
-      CMORestrictServiceTypeLB: true
-      CMORestrictLBcidrRanges: true
-      CMOAddDefaultRunAsNonRoot: false
-      CMOAddDefaultCapabilitiesToNamespaces: []
-      # - gha-cmo-runners
+      enerkubeAddDefaultCapabilities: false
+      enerkubeAddDefaultNamespaceLabels: false
+      enerkubeAddDefaultNodeSelector: true
+      enerkubeRestrictServiceTypeLB: false
+      enerkubeRestrictLBcidrRanges: false
+      enerkubeAddDefaultRunAsNonRoot: false
+      enerkubeAddDefaultCapabilitiesToNamespaces: []
+      # - gha-enerkube-runners
       # - test
-      CMORunAsUid: []
+      enerkubeRunAsUid: []
       # - namespace: "test"
       #   containername: "jnlp"
       #   uid: "1000"
-      CMORunAsGid: []
+      enerkubeRunAsGid: []
       # - namespace: "test"
       #   containername: "jnlp"
       #   gid: "1000"
