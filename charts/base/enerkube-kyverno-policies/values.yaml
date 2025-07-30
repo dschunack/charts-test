@@ -25,7 +25,7 @@ policies:
     enerkubeAddDefaultNamespaceLabels: false
     enerkubeAddDefaultNodeSelector: true
     enerkubeRestrictServiceTypeLB: false
-    enerkubeRestrictLBcidrRanges: true
+    enerkubeRestrictLBcidrRanges: false
     enerkubeAddDefaultRunAsNonRoot: false
     enerkubeAddDefaultCapabilitiesToNamespaces: []
     # - gha-enerkube-runners
