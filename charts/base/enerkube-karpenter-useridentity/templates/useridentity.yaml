@@ -7,11 +7,11 @@ metadata:
     meta.upbound.io/karpenter-id: managedidentity/v1beta1/userassignedidentity
   labels:
     app: karpenter
-  name: "{{ .Values.clusterName }}-karpenter-{{ $UAIRandom }}"
+  name: "{{ .Values.clusterName }}-karpenter"
 spec:
   forProvider:
     location: {{ .Values.location }}
-    name: "{{ .Values.clusterName }}-karpenter"
+    name: "{{ .Values.clusterName }}-karpenter-{{ $UAIRandom }}"
     resourceGroupName: {{ .Values.resourceGroup }}
 ---
 apiVersion: managedidentity.azure.upbound.io/v1beta1
