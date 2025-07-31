@@ -1,4 +1,4 @@
-{{- $UAIRandom := randAlphaNum 8 | nospace -}}
+{{- $UAIRandom := randAlphaNum 8 | nospace | lower -}}
 ---
 apiVersion: managedidentity.azure.upbound.io/v1beta1
 kind: UserAssignedIdentity
