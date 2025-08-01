@@ -598,6 +598,15 @@ entries:
     version: 0.1.0
   enerkube-roleassignment:
   - apiVersion: v2
+    created: "2025-08-01T14:39:23.757273078Z"
+    description: A Helm chart for Kubernetes
+    digest: ef3043d5cbf351b913180fc0039c84d8f1fceb19876d1f532c62baff93d272ad
+    name: enerkube-roleassignment
+    type: application
+    urls:
+    - https://github.com/dschunack/charts-test/releases/download/enerkube-roleassignment-0.2.3/enerkube-roleassignment-0.2.3.tgz
+    version: 0.2.3
+  - apiVersion: v2
     created: "2025-08-01T14:24:54.376255792Z"
     description: A Helm chart for Kubernetes
     digest: fb4d5bf49b380f9e45a0cabbea22cb7da6b2dcf3ab3cde5383df7a4473222a98
@@ -970,4 +979,4 @@ entries:
     urls:
     - https://github.com/dschunack/charts-test/releases/download/trivy-operator-iam-1.0.0/trivy-operator-iam-1.0.0.tgz
     version: 1.0.0
-generated: "2025-08-01T14:24:54.376443192Z"
+generated: "2025-08-01T14:39:23.757418297Z"
