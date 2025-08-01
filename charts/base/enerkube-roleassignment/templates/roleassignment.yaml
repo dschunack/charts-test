@@ -1,4 +1,3 @@
-{{- $UAIRandom := randAlphaNum 8 | nospace | lower -}}
 {{- $ResourceName := printf "%s-%s" $.Values.clusterName $.Values.name -}}
 {{- $principalId := (lookup "managedidentity.azure.upbound.io/v1beta1" "UserAssignedIdentity" "" $ResourceName).status.atProvider.principalId -}}
 {{- range $roleAssignment := .Values.roleAssignment }}
@@ -11,7 +10,6 @@ metadata:
     app: {{ $ResourceName }}
 spec:
   forProvider:
-    name: "{{ $.Values.clusterName }}-{{ $.Values.name }}-{{ .rolename | nospace | lower }}-{{ $UAIRandom }}"
     principalId: {{ $principalId }}
     principalType: ServicePrincipal
     roleDefinitionName: {{ .rolename }}
