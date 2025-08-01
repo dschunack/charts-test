@@ -1,6 +1,6 @@
-{{- $ResourceName := printf "%s-%s" $.Values.roleAssignment.clusterName $.Values.roleAssignment.name -}}
-{{- $principalId := (lookup "managedidentity.azure.upbound.io/v1beta1" "UserAssignedIdentity" "" $ResourceName).status.atProvider.principalId -}}
 {{- range $roleAssignment := .Values.roleAssignment }}
+{{- $ResourceName := printf "%s-%s" $roleAssignment.clusterName $roleAssignment.name -}}
+{{- $principalId := (lookup "managedidentity.azure.upbound.io/v1beta1" "UserAssignedIdentity" "" $ResourceName).status.atProvider.principalId -}}
 ---
 apiVersion: authorization.azure.upbound.io/v1beta1
 kind: RoleAssignment
