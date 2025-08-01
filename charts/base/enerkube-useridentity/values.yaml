@@ -1,8 +1,10 @@
 # enerkube Chart specificc Values
-namespaceName: "tbd"
-serviceAccountName: "tbd"
-clusterName: tbd
-subscriptionId: tbd
-location: tbd
-oidcUrl: tbd
-resourceGroup: tbd
+userIdentity:
+  - name: "tbd"
+    namespaceName: "tbd"
+    serviceAccountName: "tbd"
+    clusterName: tbd
+    subscriptionId: tbd
+    location: tbd
+    oidcUrl: tbd
+    resourceGroup: tbd

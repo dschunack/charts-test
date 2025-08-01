@@ -1,26 +1,26 @@
 {{- $UAIRandom := randAlphaNum 8 | nospace | lower -}}
-{{- range $userIdentity := .Values }}
+{{- range $userIdentity := .Values.userIdentity }}
 ---
 apiVersion: managedidentity.azure.upbound.io/v1beta1
 kind: UserAssignedIdentity
 metadata:
   annotations:
-    meta.upbound.io/{{ .serviceAccountName }}-id: managedidentity/v1beta1/userassignedidentity
+    meta.upbound.io/{{ .name }}-id: managedidentity/v1beta1/userassignedidentity
   labels:
-    app: {{ .serviceAccountName }}
-  name: "{{ .clusterName }}-{{ .serviceAccountName }}"
+    app: {{ .name }}
+  name: "{{ .clusterName }}-{{ .name }}"
 spec:
   forProvider:
     location: {{ .location }}
-    name: "{{ .clusterName }}-{{ .serviceAccountName }}-{{ $UAIRandom }}"
+    name: "{{ .clusterName }}-{{ .name }}-{{ $UAIRandom }}"
     resourceGroupName: {{ .resourceGroup }}
 ---
 apiVersion: managedidentity.azure.upbound.io/v1beta1
 kind: FederatedIdentityCredential
 metadata:
-  name: "{{ .clusterName }}-{{ .serviceAccountName }}"
+  name: "{{ .clusterName }}-{{ .name }}"
   labels:
-    app: {{ .serviceAccountName }}
+    app: {{ .name }}
 spec:
   forProvider:
     audience:
@@ -28,7 +28,7 @@ spec:
     issuer: {{ .oidcUrl }}
     parentIdSelector:
       matchLabels:
-        app: {{ .serviceAccountName }}
+        app: {{ .name }}
     resourceGroupName: {{ .resourceGroup }}
     subject: system:serviceaccount:{{ .namespaceName }}:{{ .serviceAccountName }}
 {{- end }}
