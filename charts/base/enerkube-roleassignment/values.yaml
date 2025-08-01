@@ -1,8 +1,9 @@
-# enerkube Chart specificc Values
+# enerkube Chart specific Values
+name: "tbd"
+namespaceName: "tbd"
+serviceAccountName: "tbd"
+clusterName: "tbd"
+subscriptionId: "tbd"
 roleAssignment:
-  - name: "tbd"
-    namespaceName: "tbd"
-    serviceAccountName: "tbd"
-    clusterName: "tbd"
-    subscriptionId: "tbd"
-    rolename: "tbd"
+  - rolename: "tbd"
+  - rolename: "tbd"
