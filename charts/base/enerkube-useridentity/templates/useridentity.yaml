@@ -1,0 +1,34 @@
+{{- $UAIRandom := randAlphaNum 8 | nospace | lower -}}
+{{- range $userIdentity := .Values }}
+---
+apiVersion: managedidentity.azure.upbound.io/v1beta1
+kind: UserAssignedIdentity
+metadata:
+  annotations:
+    meta.upbound.io/{{ .serviceAccountName }}-id: managedidentity/v1beta1/userassignedidentity
+  labels:
+    app: {{ .serviceAccountName }}
+  name: "{{ .clusterName }}-{{ .serviceAccountName }}"
+spec:
+  forProvider:
+    location: {{ .location }}
+    name: "{{ .clusterName }}-{{ .serviceAccountName }}-{{ $UAIRandom }}"
+    resourceGroupName: {{ .resourceGroup }}
+---
+apiVersion: managedidentity.azure.upbound.io/v1beta1
+kind: FederatedIdentityCredential
+metadata:
+  name: "{{ .clusterName }}-{{ .serviceAccountName }}"
+  labels:
+    app: {{ .serviceAccountName }}
+spec:
+  forProvider:
+    audience:
+      - api://AzureADTokenExchange
+    issuer: {{ .oidcUrl }}
+    parentIdSelector:
+      matchLabels:
+        app: {{ .serviceAccountName }}
+    resourceGroupName: {{ .resourceGroup }}
+    subject: system:serviceaccount:{{ .namespaceName }}:{{ .serviceAccountName }}
+{{- end }}
