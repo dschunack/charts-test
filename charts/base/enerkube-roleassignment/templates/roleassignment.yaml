@@ -6,12 +6,12 @@
 apiVersion: authorization.azure.upbound.io/v1beta1
 kind: RoleAssignment
 metadata:
-  name:  "{{ $.Values.clusterName }}-{{ $.Values.name }}-{{ .rolename }}"
+  name:  "{{ $.Values.clusterName }}-{{ $.Values.name }}-{{ .rolename | nospace | lower }}"
   labels:
     app: {{ $ResourceName }}
 spec:
   forProvider:
-    name: "{{ $.Values.clusterName }}-{{ $.Values.name }}-{{ .rolename }}-{{ $UAIRandom }}"
+    name: "{{ $.Values.clusterName }}-{{ $.Values.name }}-{{ .rolename | nospace | lower }}-{{ $UAIRandom }}"
     principalId: {{ $principalId }}
     principalType: ServicePrincipal
     roleDefinitionName: {{ .rolename }}
