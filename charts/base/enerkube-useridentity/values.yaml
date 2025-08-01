@@ -3,8 +3,7 @@ userIdentity:
   - name: "tbd"
     namespaceName: "tbd"
     serviceAccountName: "tbd"
-    clusterName: tbd
-    subscriptionId: tbd
-    location: tbd
-    oidcUrl: tbd
-    resourceGroup: tbd
+    clusterName: "tbd"
+    location: "tbd"
+    oidcUrl: "tbd"
+    resourceGroup: "tbd"
